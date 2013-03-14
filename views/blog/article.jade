@@ -1,0 +1,21 @@
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importJs(['/common/codemirror/codemirror.min.js', '/common/codemirror/javascript.min.js']);
+  - fileImporter.importCss(['/common/codemirror/codemirror.css', '/common/codemirror/monokai.css'])
+  - fileImporter.importCss(['/blog/stylesheets/articleitem.styl', '/blog/stylesheets/article.styl']);
+  - fileImporter.importJs('/blog/javascripts/index.coffee');
+  #contentContainer
+    - var article = viewData.article;
+    .articleContainer
+      h4.title #{article.title}
+      - var articleContent = article.content;
+      if articleContent
+        .content
+          each content in articleContent
+            if content.tag == 'content'
+              p #{content.value}
+            if content.tag == 'subtitle'
+              h5.subtitle !{content.value}
+            else if content.tag == 'code'
+              textarea.codeContainer !{content.value}

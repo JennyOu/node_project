@@ -1,0 +1,12 @@
+- fileImporter.importCss('/blog/stylesheets/header.styl');
+//- - fileImporter.importJs('/blog/javascripts/header.coffee');
+header#header
+  - var navData = viewData.header.navData;
+  - var selectedIndex = viewData.header.selectedIndex;
+  ul.navbar
+    each nav, i in navData
+      - var navClass = 'navItem';
+      if i === selectedIndex
+          - navClass += ' active';
+      li(class='#{navClass}')
+        a(href="#{encodeURI(nav.url)}") #{nav.title}

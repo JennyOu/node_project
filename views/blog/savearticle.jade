@@ -1,0 +1,15 @@
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importJs(['/common/codemirror/codemirror.min.js', '/common/codemirror/javascript.min.js']);
+  - fileImporter.importCss(['/common/codemirror/codemirror.css', '/common/codemirror/monokai.css'])
+  - fileImporter.importCss('/blog/stylesheets/savearticle.styl');
+  - fileImporter.importJs('/blog/javascripts/savearticle.coffee');
+  #contentContainer
+    .btn-group.controlBtns
+      a.btn(href='javascript:;') 标题
+      a.btn(href='javascript:;') 子标题
+      a.btn(href='javascript:;') 内容
+      a.btn(href='javascript:;') 代码
+      a.btn.saveBtn(href='javascript:;') 保存
+    .articleContent
