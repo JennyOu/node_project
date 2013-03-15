@@ -60,7 +60,7 @@ startApps = (appConfigList, cbf) ->
   jtRedis = require 'jtredis'
 
   appDefaultOptions = 
-    rootPath : rootPath
+    appPath : rootPath
     redisClient : jtRedis.getClient()
     viewsPath : config.getViewsPath()
     staticSetting : 
