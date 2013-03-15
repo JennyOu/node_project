@@ -1,10 +1,10 @@
 extends ./layout
 block bodyContainer
   include ./header
-  - fileImporter.importJs(['/common/codemirror/codemirror.min.js', '/common/codemirror/javascript.min.js']);
-  - fileImporter.importCss(['/common/codemirror/codemirror.css', '/common/codemirror/monokai.css'])
-  - fileImporter.importCss(['/blog/stylesheets/articleitem.styl', '/blog/stylesheets/article.styl']);
-  - fileImporter.importJs('/blog/javascripts/index.coffee');
+  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js']);
+  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css'])
+  - fileImporter.importCss(['/statics/blog/stylesheets/articleitem.styl', '/statics/blog/stylesheets/article.styl']);
+  - fileImporter.importJs('/statics/blog/javascripts/index.coffee');
   #contentContainer
     - var article = viewData.article;
     .articleContainer

@@ -37,7 +37,4 @@ routeInfos = [
   }
 ]
 
-module.exports = (app) ->
-  jtWeb = require 'jtweb'
-  routeHandler = jtWeb.routeHandler()
-  routeHandler.initRoutes app, routeInfos
+module.exports = routeInfos

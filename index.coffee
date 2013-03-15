@@ -4,87 +4,80 @@ config = require './config'
 rootPath = config.getRootPath()
 
 ###*
- * getRouteFiles 获取路由文件
+ * getAppConfigList 获取app配置对象列表
  * @param  {[type]} cbf [description]
  * @return {[type]}     [description]
 ###
-getRouteFiles = (cbf) ->
+getAppConfigList = (cbf) ->
   fs = require 'fs'
-  resultFiles = []
+  configList = []
   getFiles = (appNames) ->
     _.each appNames, (appName) ->
       if appName.charAt(0) != '.'
-        file = "#{rootPath}/apps/#{appName}/init"
-        resultFiles.push file
-        cbf null, resultFiles
+        file = "#{rootPath}/apps/#{appName}/config"
+        configList.push require(file).getAppConfig()
+    cbf null, configList
   if config.getLaunchAppList() == 'all'
     fs.readdir "#{rootPath}/apps", (err, files) ->
       getFiles files
   else
     getFiles launchAppList
 
-initLogger = () ->
-  jtLogger = require 'jtlogger'
 
-getMongoDbConfig = (cbf) ->
-  cbf null, {
-    dbName : 'vicanso'
-    uri : 'mongodb://localhost:10020/vicanso'
-  }
+settingMongoDb = (configList, cbf) ->
+  jtWeb = require 'jtweb'
+  _.each configList, (config) ->
+    if config.mongoDbConfig
+      jtWeb.initMongoDb config.mongoDbConfig
+  cbf null, configList
 
-getRedisConfig = (cbf) ->
-  cbf null, {
-    name : 'vicanso'
-    uri : 'redis://localhost:10010'
-    pwd : 'MY_REDIS_PWD'
-  }
+settingRedis = (configList, cbf) ->
+  jtWeb = require 'jtweb'
+  _.each configList, (config) ->
+    if config.redisConfig
+      jtWeb.initRedis config.redisConfig
+  cbf null, _.pluck configList, 'app'
 
 ###*
  * startApps 启动apps
- * @param  {[type]} err     [description]
- * @param  {[type]} results [description]
+ * @param  {[type]} getAppConfigList [description]
  * @return {[type]}         [description]
 ###
-startApps = (err, results) ->
-  if err
-    return
+startApps = (appConfigList, cbf) ->
+  getAppOptions = (appConfigs) ->
+    defaultOptions = appConfigs.pop()
+    defaultOptions.routeInfos ?= []
+    defaultOptions.middleware ?= []
+    _.each appConfigs, (appConfig) ->
+      defaultOptions.routeInfos =  defaultOptions.routeInfos.concat appConfig.routeInfos
+      defaultOptions.middleware = defaultOptions.middleware.concat appConfig.middleware
+    return defaultOptions
+  defaultPort = config.getListenPort()
+  _.each appConfigList, (appConfig) ->
+    appConfig.port ?= defaultPort
+  groupConfigList = _.groupBy appConfigList, 'port'
   jtWeb = require 'jtweb'
   jtRedis = require 'jtredis'
-  jtWeb.initMongoDb results.mongoDbConfig
 
-  jtWeb.initRedis results.redisConfig
-
-
-  appOptions = 
+  appDefaultOptions = 
     rootPath : rootPath
-    firstMiddleware : (req, res, next) ->
-      console.dir req.url
-      next()
-    redisClient : null
-    routeFiles : results.routeFiles
+    redisClient : jtRedis.getClient()
     viewsPath : config.getViewsPath()
     staticSetting : 
       mountPath : '/statics'
       path : config.getStaticPath()
     faviconPath : config.getFaviconPath()
-    port : config.getListenPort()
-    middleware : (req, res, next) ->
-      if req.url == '/healthchecks'
-        res.send 'success'
-        return 
-      else if req.host == 'blog.vicanso.com'
-        req.url = '/blog' + req.url
-        req.originalUrl = req.url
-      else if req.host == 'ys.vicanso.com'
-        req.url = '/ys' + req.url
-        req.originalUrl = req.url
-      next()
-  jtWeb.initApp appOptions
+  _.each groupConfigList, (appConfigs) ->
+    appOptions = getAppOptions appConfigs
+    jtWeb.initApp _.extend {}, appDefaultOptions, appOptions
+  cbf null
 
-async.parallel {
-  routeFiles : getRouteFiles
-  mongoDbConfig : getMongoDbConfig
-  redisConfig : getRedisConfig
-}, startApps
+async.waterfall [
+  getAppConfigList
+  settingMongoDb
+  settingRedis
+  startApps
+], (err) ->
+  console.dir 'stat node successful!'
   
 
