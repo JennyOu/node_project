@@ -48,23 +48,23 @@ getRedisConfig = (cbf) ->
 startApps = (err, results) ->
   if err
     return
-  app = require './app'
+  jtWeb = require 'jtweb'
   jtRedis = require 'jtredis'
-  app.initMongoDb results.mongoDbConfig
+  jtWeb.initMongoDb results.mongoDbConfig
 
-  app.initRedis results.redisConfig
+  jtWeb.initRedis results.redisConfig
 
 
   appOptions = 
     rootPath : rootPath
-    # firstMiddleware : (req, res, next) ->
-    #   console.dir req.url
-    #   next()
+    firstMiddleware : (req, res, next) ->
+      console.dir req.url
+      next()
     redisClient : null
     routeFiles : results.routeFiles
     viewsPath : config.getViewsPath()
     staticSetting : 
-      mountPath : '/static'
+      mountPath : '/statics'
       path : config.getStaticPath()
     faviconPath : config.getFaviconPath()
     port : config.getListenPort()
@@ -79,7 +79,7 @@ startApps = (err, results) ->
         req.url = '/ys' + req.url
         req.originalUrl = req.url
       next()
-  app.initApp appOptions
+  jtWeb.initApp appOptions
 
 async.parallel {
   routeFiles : getRouteFiles

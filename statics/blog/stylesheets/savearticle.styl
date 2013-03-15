@@ -1,0 +1,18 @@
+@import "./common"
+@import './mixins/gradients'
+#contentContainer
+  width CONTENT_WIDTH
+  margin HEADER_HEIGHT + SPACING_VALUE auto auto
+  .controlBtns
+    overflow hidden
+    .btn
+      float left
+      padding 5px 10px
+      background linear-gradient(top, #fff, #e6e6e6)
+  .articleContent
+    height 500px
+    overflow-y scroll
+    .userTextArea
+      width 100%
+    .CodeMirror
+      margin-bottom 20px
