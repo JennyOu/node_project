@@ -24,7 +24,20 @@ getRouteFiles = (cbf) ->
     getFiles launchAppList
 
 initLogger = () ->
-  
+  jtLogger = require 'jtlogger'
+
+getMongoDbConfig = (cbf) ->
+  cbf null, {
+    dbName : 'vicanso'
+    uri : 'mongodb://localhost:10020/vicanso'
+  }
+
+getRedisConfig = (cbf) ->
+  cbf null, {
+    name : 'vicanso'
+    uri : 'redis://localhost:10010'
+    pwd : 'MY_REDIS_PWD'
+  }
 
 ###*
  * startApps 启动apps
@@ -35,11 +48,21 @@ initLogger = () ->
 startApps = (err, results) ->
   if err
     return
+  app = require './app'
+  jtRedis = require 'jtredis'
+  app.initMongoDb results.mongoDbConfig
+
+  app.initRedis results.redisConfig
+
+
   appOptions = 
     rootPath : rootPath
+    # firstMiddleware : (req, res, next) ->
+    #   console.dir req.url
+    #   next()
     redisClient : null
-    firstMiddle : null
     routeFiles : results.routeFiles
+    viewsPath : config.getViewsPath()
     staticSetting : 
       mountPath : '/static'
       path : config.getStaticPath()
@@ -48,6 +71,7 @@ startApps = (err, results) ->
     middleware : (req, res, next) ->
       if req.url == '/healthchecks'
         res.send 'success'
+        return 
       else if req.host == 'blog.vicanso.com'
         req.url = '/blog' + req.url
         req.originalUrl = req.url
@@ -55,11 +79,12 @@ startApps = (err, results) ->
         req.url = '/ys' + req.url
         req.originalUrl = req.url
       next()
-  app = require './app'
   app.initApp appOptions
 
 async.parallel {
   routeFiles : getRouteFiles
+  mongoDbConfig : getMongoDbConfig
+  redisConfig : getRedisConfig
 }, startApps
   
 

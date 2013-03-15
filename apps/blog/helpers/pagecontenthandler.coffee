@@ -14,7 +14,7 @@ pageContentHandler =
       header : webConfig.getHeader req.url
     vicansoDbClient.find 'articles', {}, (err, docs) ->
         if err
-          next err
+          cbf err
         else
           contentLengthLimit = 400
           divideTotal = 4
@@ -30,7 +30,6 @@ pageContentHandler =
             if doc.content.length > contentLimit
               doc.content.length = contentLimit
             results[i % divideTotal].push doc
-
           viewData.articlesList = results
           cbf null, {
             title : '追逐javascript的灵魂精粹'

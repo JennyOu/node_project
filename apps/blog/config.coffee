@@ -7,6 +7,6 @@ config =
     if rootConfig.isProductionMode()
       return 'http://s.vicanso.com'
     else
-      return 'http://s.vicanso.com:10000'
+      return null
 
 module.exports = config

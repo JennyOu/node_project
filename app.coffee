@@ -20,9 +20,8 @@ initApp = (options) ->
     redisClient : opts.redisClient
   }
 
-  if opts.firstMiddle
-    app.use opts.firstMiddle
-
+  if opts.firstMiddleware
+    app.use opts.firstMiddleware
 
 
   # 静态文件处理
@@ -86,7 +85,7 @@ initMongoDb = (dbConfigs) ->
     immediatelyInit : true
     options :
       w : 0
-      native_parser : true
+      native_parser : false
       auto_reconnect : true
       read_secondary : true
       readPreference : 'secondaryPreferred'
@@ -94,7 +93,7 @@ initMongoDb = (dbConfigs) ->
     dbConfigs = [dbConfigs]
   _.each dbConfigs, (dbConfig, i) ->
     dbConfigs[i] = _.extend defaultConfig, dbConfig
-  jtMongodb.set {
+  jtMongoDb.set {
     queryTime : true
     valiate : true
     timeOut : 0
