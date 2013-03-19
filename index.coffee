@@ -78,6 +78,6 @@ async.waterfall [
   settingRedis
   startApps
 ], (err) ->
-  console.dir 'stat node successful!'
+  console.dir 'start node successful!'
   
 

@@ -1,0 +1,23 @@
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importCss(['/statics/novel/stylesheets/itempage.styl']);
+  #contentContainer
+    h1.title #{viewData.title}
+    .controlBtns
+      - var prevPageClass = ['pageBtn'], nextPageClass = ['pageBtn lastBtn'];
+      if !viewData.prevPageUrl
+        - prevPageClass.push('pageBtnDisabled');
+      if !viewData.nextPageUrl
+        - nextPageClass.push('pageBtnDisabled');
+      a(class=prevPageClass, href='#{viewData.prevPageUrl || "javascript:;"}') 上一页
+      a.pageBtn(href='#{viewData.baseUrl}') 返回目录
+      a(class=nextPageClass, href='#{viewData.nextPageUrl || "javascript:;"}') 下一页
+    .novelContent
+      - var contentList = viewData.contentList;
+      each content in contentList
+        p #{content}
+    .controlBtns
+      a(class=prevPageClass, href='#{viewData.prevPageUrl || "javascript:;"}') 上一页
+      a.pageBtn(href='#{viewData.baseUrl}') 返回目录
+      a(class=nextPageClass, href='#{viewData.nextPageUrl || "javascript:;"}') 下一页

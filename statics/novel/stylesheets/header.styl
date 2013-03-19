@@ -1,0 +1,32 @@
+@import './common'
+@import './mixins/gradients'
+
+#header
+  background linear-gradient(top, #222, #111)
+  left 0
+  right 0
+  top 0
+  position fixed
+  z-index 99
+  .navbar
+    paddingValue = 30px
+    height HEADER_HEIGHT
+    line-height HEADER_HEIGHT
+    padding 0 paddingValue
+    width CONTENT_WIDTH - 2 * paddingValue
+    font-size 15px
+    margin auto
+    .navItem
+      float left
+      height 100%
+      &.active
+        a
+          color #fff
+          background-color #111
+      a
+        display block
+        color #999
+        padding-left 30px
+        padding-right 30px
+    .hidden
+      display none

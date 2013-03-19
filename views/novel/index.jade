@@ -1,0 +1,15 @@
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importCss(['/statics/novel/stylesheets/index.styl']);
+  #contentContainer
+    - var novelsList = viewData.novelsList;
+    .waterfalls
+      each novels in novelsList
+        .waterfall
+          each novel in novels
+            .waterfallItem
+              .articleContainer
+                //- h4.title #{novel.name}
+                a.novelArchor(href='/item/#{novel._id}', target='_blank')
+                  img.frontcover(src='/statics/novel/frontcover/#{encodeURI(novel.name)}.jpg')

@@ -17,8 +17,8 @@ pageContentHandler =
           cbf err
         else
           contentLengthLimit = 400
-          divideTotal = 4
           results = [[], [], [], []]
+          divideTotal = results.length
           _.each docs, (doc, i) ->
             content = doc.content
             itemContentLength = 0

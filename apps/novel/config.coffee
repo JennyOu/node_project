@@ -1,10 +1,10 @@
 
-blogMiddleware = (req, res, next) ->
+novelMiddleware = (req, res, next) ->
   if req.url == '/healthchecks'
     res.send 'success'
     return
-  else if req.host == 'blog.vicanso.com'
-    req.url = '/blog' + req.url
+  else if req.host == 'xiaoshuo.vicanso.com'
+    req.url = '/xiaoshuo' + req.url
     req.originalUrl = req.url
   next()
 
@@ -21,15 +21,15 @@ config =
   getAppConfig : () ->
     return {
       mongoDbConfig : 
-        dbName : 'vicanso'
-        uri : 'mongodb://localhost:10020/vicanso'
+        dbName : 'novel'
+        uri : 'mongodb://localhost:10020/novel'
       redisConfig : 
         name : 'vicanso'
         uri : 'redis://localhost:10010'
         pwd : 'MY_REDIS_PWD'
       app : 
         routeInfos : require './routes'
-        middleware : [blogMiddleware]
+        middleware : [novelMiddleware]
     }
      
 

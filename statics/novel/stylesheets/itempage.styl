@@ -1,0 +1,36 @@
+@import "./common"
+@import './mixins/gradients'
+#contentContainer
+  width CONTENT_WIDTH
+  margin HEADER_HEIGHT + SPACING_VALUE auto auto
+  .title
+    text-align center
+  .novelContent
+    box-shadow 0 1px 3px rgba(34, 25, 25, 0.4)
+    padding 5px
+    background-color white
+    p
+      font-size 18px
+      line-height 32px
+      text-indent 2em
+      color #48484c
+      background-color #f7f7f9
+      padding 0 5px 10px 5px
+  .controlBtns
+    width 320px
+    margin 10px auto
+    .pageBtn
+      display inline-block
+      margin-right 30px
+      padding 3px 20px
+      color white
+      background linear-gradient(top, #444, #222)
+      border 1px solid black
+      border-color #222 #222 #000
+      border-color rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25)
+    .pageBtnDisabled
+      color #222
+    .lastBtn
+      margin-right 0
+    .pageBtn
+      *display inline

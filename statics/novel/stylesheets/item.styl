@@ -1,0 +1,23 @@
+@import "./common"
+#contentContainer
+  width CONTENT_WIDTH
+  margin HEADER_HEIGHT + SPACING_VALUE auto auto
+  .title
+    text-align center
+    padding 5px 0
+  .pagesContainer
+    box-shadow 0 1px 3px rgba(34, 25, 25, 0.4)
+    padding 5px
+    background-color white
+    overflow hidden
+    .page
+      pageItemHeight = 40px
+      display block
+      width 20%
+      float left
+      height pageItemHeight
+      line-height pageItemHeight
+      text-indent 1em
+      color #48484c
+    .evenPage 
+      background-color #f7f7f9
