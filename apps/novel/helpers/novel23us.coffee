@@ -15,6 +15,20 @@ class Novel23US
     @getNovelInfo (err, bookInfo) ->
       if err
         cbf err
+      else if bookInfo.click < 100000
+        savePath = path.join basePath, bookInfo.author, bookInfo.name
+        options = 
+          baseUrl : bookInfo.baseUrl
+          savePath : savePath
+          info :
+            author : bookInfo.author
+            type : bookInfo.type
+            name : bookInfo.name
+            bookId : self.id
+            status : bookInfo.status
+            desc : bookInfo.desc
+        console.error 'the total click is less than 100000'
+        cbf null, options.info
       else
         if _.keys(bookInfo).length < 6
           cbf new Error 'get all book info fail'
@@ -28,15 +42,20 @@ class Novel23US
             author : bookInfo.author
             type : bookInfo.type
             name : bookInfo.name
+            bookId : self.id
+            status : bookInfo.status
             desc : bookInfo.desc
         self.startGetNovel (err) ->
-          self.downloadFrontCover bookInfo.imgUrl, "#{savePath}frontcover.jpg"
-          self.options.info.bookId = self.id
-          pageInfos = _.compact self.pageInfos
-          self.options.info.pages = pageInfos
-          fs = require 'fs'
-          fs.writeFile "#{savePath}infos.json", JSON.stringify self.options.info
-          cbf err, self.options.info
+          if err
+            cbf err
+          else
+            self.downloadFrontCover bookInfo.imgUrl, "#{savePath}frontcover.jpg"
+            pageInfos = _.compact self.pageInfos
+            self.options.info.pages = pageInfos
+            fs = require 'fs'
+            fs.writeFile "#{savePath}infos.json", JSON.stringify(self.options.info), (err) ->
+
+            cbf null, self.options.info
   downloadFrontCover : (url, file) ->
     fs = require 'fs'
     request {
@@ -83,6 +102,19 @@ class Novel23US
       if !result
         return null
       return result[1].trim()
+    getStatus = (bookInfo) ->
+      re = /<th>文章状态<\/th><td>&nbsp;([\s\S]*?)<\/td>/
+      result = re.exec bookInfo
+      if !result
+        return null
+      return result[1].trim()
+
+    getClick = (bookInfo) ->
+      re = /<th>总点击数<\/th><td>&nbsp;([\s\S]*?)<\/td>/
+      result = re.exec bookInfo
+      if !result
+        return null
+      return GLOBAL.parseInt result[1].trim()
 
     getDesc = (bookInfo) ->
       re = /<p>&nbsp;&nbsp;&nbsp;&nbsp;([\s\S]*?)<\/p>/
@@ -120,18 +152,23 @@ class Novel23US
           bookInfo.name = getBookName bookInfoStr
           bookInfo.baseUrl = getBaseUrl bookInfoStr
           bookInfo.imgUrl = getImgUrl bookInfoStr
+          bookInfo.status = getStatus bookInfoStr
           bookInfo.desc = getDesc bookInfoStr
+          bookInfo.click = getClick bookInfoStr
           cbf null, bookInfo
 
   startGetNovel : (cbf) ->
     self = @
     options = @options
-    mkdirp.sync options.savePath
     fs = require 'fs'
     @getPageInfoList (err, pageInfoList) ->
       if err
         console.error err
+        cbf err
+      # else if pageInfoList.length < 200
+      #   cbf new Error 'the chater is less than 200'
       else
+        mkdirp.sync options.savePath
         self.pageTitleList = _.pluck pageInfoList, 'title'
         self.getPageContent pageInfoList, cbf
   getPageContent : (pageInfoList, cbf) ->

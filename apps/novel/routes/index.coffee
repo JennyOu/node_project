@@ -6,7 +6,7 @@ staticsHost = appConfig.getStaticsHost()
 
 routeInfos = [
   {
-    route : '/xiaoshuo'
+    route : ['/xiaoshuo', '/xiaoshuo/page/:page', '/xiaoshuo/type/:type', '/xiaoshuo/type/:type/page/:page']
     jadeView : 'novel/index'
     staticsHost : staticsHost
     handleFunc : pageContentHandler.index

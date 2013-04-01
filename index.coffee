@@ -63,9 +63,16 @@ startApps = (appConfigList, cbf) ->
     appPath : rootPath
     redisClient : jtRedis.getClient()
     viewsPath : config.getViewsPath()
-    staticSetting : 
-      mountPath : '/statics'
-      path : config.getStaticPath()
+    staticSetting : [
+      {
+        mountPath : '/statics'
+        path : config.getStaticPath()
+      }
+      {
+        mountPath : '/statics'
+        path : '/Users/Tree/novel_frontcovers'
+      }
+    ]
     faviconPath : config.getFaviconPath()
   _.each groupConfigList, (appConfigs) ->
     appOptions = getAppOptions appConfigs

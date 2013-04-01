@@ -17,7 +17,3 @@ block bodyContainer
       - var contentList = viewData.contentList;
       each content in contentList
         p #{content}
-    .controlBtns
-      a(class=prevPageClass, href='#{viewData.prevPageUrl || "javascript:;"}') 上一页
-      a.pageBtn(href='#{viewData.baseUrl}') 返回目录
-      a(class=nextPageClass, href='#{viewData.nextPageUrl || "javascript:;"}') 下一页

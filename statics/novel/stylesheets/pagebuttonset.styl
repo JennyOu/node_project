@@ -1,0 +1,15 @@
+@import "./mixins/vicanso"
+.pageBtnSet
+  overflow hidden
+  .pageBtn
+    vicansoBtn #222, #666
+    display block
+    float left
+    width 80px
+    padding 5px 0
+    margin-right 10px
+    &.selected
+      color white
+      font-size 14px
+    &:hover
+      background-color #111

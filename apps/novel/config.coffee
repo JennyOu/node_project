@@ -32,5 +32,8 @@ config =
         middleware : [novelMiddleware]
     }
      
+do () ->
+  novelDbClient = require('jtmongodb').getClient 'novel'
+  novelDbClient.ensureIndex 'items', 'publish'
 
 module.exports = config
