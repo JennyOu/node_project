@@ -1,0 +1,41 @@
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+.recommendationsContainer
+  margin-bottom 20px
+  h3
+    padding 10px 0px
+    border-bottom 1px dashed #aaa
+    margin-bottom 10px
+    line-height 24px
+    font-size 16px
+    text-shadow 0 1px 0 #fff
+  .recommendations
+    border 1px solid #222
+    font-size 12px
+    overflow hidden
+    vicansoBorderRadius()
+    .item
+      line-height 18px
+      border-top 1px dashed #444
+      padding 8px
+      color #666
+      text-shadow 0px -1px 0px #000
+      background-color #333
+      vicansoGradient  rgba(0,0,0,0.00), rgba(0,0,0,0.10)
+      vicansoBoxShadow 1px #262626
+      &.first
+        border-top none
+      a
+        color #eee
+        display block
+        &:hover
+          text-decoration underline 
+      .createTime
+        background-color #7c5229
+        border 1px solid #422100
+        margin-left 5px
+        padding 2px 3px
+        color #422100
+        float right
+        text-shadow none
+        vicansoBorderRadius 5px

@@ -1,5 +1,6 @@
 async = require 'async'
 _ = require 'underscore'
+require 'date-utils'
 config = require './config'
 rootPath = config.getRootPath()
 
@@ -17,7 +18,8 @@ getAppConfigList = (cbf) ->
         file = "#{rootPath}/apps/#{appName}/config"
         configList.push require(file).getAppConfig()
     cbf null, configList
-  if config.getLaunchAppList() == 'all'
+  launchAppList = config.getLaunchAppList()
+  if launchAppList == 'all'
     fs.readdir "#{rootPath}/apps", (err, files) ->
       getFiles files
   else
@@ -49,9 +51,11 @@ startApps = (appConfigList, cbf) ->
     defaultOptions.routeInfos ?= []
     defaultOptions.middleware ?= []
     _.each appConfigs, (appConfig) ->
-      defaultOptions.routeInfos =  defaultOptions.routeInfos.concat appConfig.routeInfos
-      defaultOptions.middleware = defaultOptions.middleware.concat appConfig.middleware
-    return defaultOptions
+      if appConfig.routeInfos
+        defaultOptions.routeInfos =  defaultOptions.routeInfos.concat appConfig.routeInfos
+      if appConfig.middleware
+        defaultOptions.middleware = defaultOptions.middleware.concat appConfig.middleware
+    defaultOptions
   defaultPort = config.getListenPort()
   _.each appConfigList, (appConfig) ->
     appConfig.port ?= defaultPort

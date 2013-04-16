@@ -1,0 +1,23 @@
+mixin article(data)
+  - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/common/stylesheets/monokai.styl']);
+  .article
+    - var authorInfo = data.authorInfo;
+    .author #{authorInfo.name}（#{authorInfo.contact}）
+      span.createTime #{data.createTime}
+      img(src='#{authorInfo.profilePic}')
+    .info
+      - var tags = data.tags
+      if tags && tags.length > 0
+        .tags
+          each tag in tags
+            a.tag(href='/tag/#{tag}') #{tag}
+      a.title(href='/article/#{data._id}', target='_blank') #{data.title}
+
+    .content !{data.content}
+      if data.readMore
+        p.ellipsis ............（省略
+          span #{data.ellipsis}
+          | 字）
+    if data.readMore
+      .behaviorBtns
+        a.readmore.btn(href='/article/#{data._id}',  target='_blank') 更多内容...

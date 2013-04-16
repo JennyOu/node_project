@@ -1,21 +1,9 @@
+include ./mixins
 extends ./layout
 block bodyContainer
   include ./header
-  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js']);
-  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css'])
-  - fileImporter.importCss(['/statics/blog/stylesheets/articleitem.styl', '/statics/blog/stylesheets/article.styl']);
-  - fileImporter.importJs('/statics/blog/javascripts/index.coffee');
+  - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/blog/stylesheets/articleitem.styl', '/statics/common/stylesheets/monokai.styl']);
   #contentContainer
     - var article = viewData.article;
     .articleContainer
-      h4.title #{article.title}
-      - var articleContent = article.content;
-      if articleContent
-        .content
-          each content in articleContent
-            if content.tag == 'content'
-              p #{content.value}
-            if content.tag == 'subtitle'
-              h5.subtitle !{content.value}
-            else if content.tag == 'code'
-              textarea.codeContainer !{content.value}
+      mixin article(article)

@@ -1,40 +1,44 @@
 appConfig = require '../config'
 appPath = appConfig.getAppPath()
 pageContentHandler = require "#{appPath}/helpers/pagecontenthandler"
-
+# sessionParser = require('jtweb').sessionParser()
 staticsHost = appConfig.getStaticsHost()
 
 routeInfos = [
   {
-    route : '/blog'
+    route : ['/', '/tag/:tag']
     jadeView : 'blog/index'
     staticsHost : staticsHost
-    handleFunc : pageContentHandler.index
+    handler : pageContentHandler.index
   }
   {
-    route : '/blog/article/:id'
+    route : '/article/:id'
     jadeView : 'blog/article'
     staticsHost : staticsHost
-    handleFunc : pageContentHandler.article
+    handler : pageContentHandler.article
   }
   {
-    route : '/blog/node'
+    route : '/node'
     jadeView : 'blog/node'
     staticsHost : staticsHost
-    handleFunc : pageContentHandler.node
+    handler : pageContentHandler.node
   }
   {
     type : 'get'
-    route : '/blog/savearticle'
+    route : '/savearticle'
     jadeView : 'blog/savearticle'
     staticsHost : staticsHost
-    handleFunc : pageContentHandler.saveArticle
+    handler : pageContentHandler.saveArticle
   }
   {
     type : 'post'
-    route : '/blog/savearticle'
-    handleFunc : pageContentHandler.saveArticle
+    route : '/savearticle'
+    handler : pageContentHandler.saveArticle
+  }
+  {
+    type : 'post'
+    route : '/mergeajax'
+    handler : pageContentHandler.mergeAjax
   }
 ]
-
 module.exports = routeInfos

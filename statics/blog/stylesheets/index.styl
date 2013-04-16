@@ -1,36 +1,15 @@
-@import "./common"
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+slideBarWidth = 400px
 #contentContainer
   width CONTENT_WIDTH
   margin HEADER_HEIGHT + SPACING_VALUE auto auto
-  .waterfalls
-    width CONTENT_WIDTH - 10
-    margin auto
-    padding 5px 0
-    overflow hidden
-    .waterfall
-      width 25%
-      float left
-      .waterfallItem
-        margin-right 20px
-        .articleContainer
-          .title
-            font-size 20px
-        .infoList
-          background-color #efefef
-          color #ad9c9c
-          padding 5px 0
-          .infoItem
-            overflow hidden
-            padding 5px 10px
-            p
-              margin 0
-            .avatar
-              float left
-              margin 0 5px
-              border 2px solid #080808
-              img
-                width 40px
-          .authorInfo
-            border-bottom 1px solid #ededed
-          .commenterInfo
-            border-top 1px solid white
+  .articles
+    margin-right slideBarWidth + 20
+    .article
+      margin-bottom 30px
+
+
+#slideBar
+  float right
+  width slideBarWidth

@@ -11,9 +11,9 @@ block bodyContainer
             .waterfallItem
               .novelContainer
                 h4.title 
-                  a.novelArchor(href='/item/#{novel._id}', target='_blank') #{novel.name}
+                  a.novelArchor(href='/item/#{novel.bookId}', target='_blank') #{novel.name}
                 .novelInfo
-                  a.novelArchor(href='/item/#{novel._id}', target='_blank')
+                  a.novelArchor(href='/item/#{novel.bookId}', target='_blank')
                     img.frontcover(src='/statics/#{encodeURI(novel.author)}_#{encodeURI(novel.name)}.jpg')
                     //- img.frontcover(src='/statics/novel/frontcover/#{encodeURI(novel.name)}.jpg')
                   p.desc #{novel.desc}

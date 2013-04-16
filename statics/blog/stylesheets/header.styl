@@ -1,8 +1,9 @@
 @import './common'
-@import './mixins/gradients'
+@import '../../common/stylesheets/mixins/vicanso'
 
 #header
-  background linear-gradient(top, #222, #111)
+  background-color #004385
+  vicansoGradient #0054a6, #004385
   left 0
   right 0
   top 0
@@ -14,18 +15,16 @@
     line-height HEADER_HEIGHT
     padding 0 paddingValue
     width CONTENT_WIDTH - 2 * paddingValue
-    font-size 15px
     margin auto
     .navItem
       float left
       height 100%
       &.active
         a
-          color #fff
-          background-color #111
+          background-color #003363
       a
         display block
-        color #999
+        color white
         padding-left 30px
         padding-right 30px
     .hidden

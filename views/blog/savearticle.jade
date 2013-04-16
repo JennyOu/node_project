@@ -1,15 +1,31 @@
 extends ./layout
 block bodyContainer
   include ./header
-  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js']);
-  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css'])
-  - fileImporter.importCss('/statics/blog/stylesheets/savearticle.styl');
+  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js', '/statics/common/javascripts/utils/markdown.min.js', '/statics/common/javascripts/utils/highlight.min.js']);
+  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css', '/statics/common/stylesheets/monokai.styl'])
+  - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/blog/stylesheets/savearticle.styl']);
   - fileImporter.importJs('/statics/blog/javascripts/savearticle.coffee');
   #contentContainer
-    .btn-group.controlBtns
-      a.btn(href='javascript:;') 标题
-      a.btn(href='javascript:;') 子标题
-      a.btn(href='javascript:;') 内容
-      a.btn(href='javascript:;') 代码
-      a.btn.saveBtn(href='javascript:;') 保存
-    .articleContent
+    .preview
+      .article
+        .author 谢树洲Tree(vicansocanbico@gmail.com)
+          span.createTime 2013.03.01
+          img(src='http://tp1.sinaimg.cn/2398226332/50/5660016074/1')
+        h3.title 
+          a(href='#') 
+        .content
+
+        .behaviorBtns
+          a.readmore.btn(href='javascript:;') readmore...
+    .editContainer
+      .tags.btn-group
+        a.btn(href='javascript:;') node
+        a.btn(href='javascript:;') javascript
+        a.btn(href='javascript:;') jQuery
+        a.btn(href='javascript:;') web前端
+        a.btn(href='javascript:;') others
+      .btn-group.controlBtns
+        a.btn(href='javascript:;') 标题
+        a.btn(href='javascript:;') 内容
+        a.btn.saveBtn(href='javascript:;') 保存
+      .articleContent

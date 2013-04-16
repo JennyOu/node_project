@@ -5,9 +5,12 @@ appPath = appConfig.getAppPath()
 webConfig = require "#{appPath}/helpers/webconfig"
 async = require 'async'
 fs = require 'fs'
-Novel23US = require './novel23us'
+jtfs = require 'jtfs'
 async = require 'async'
+# OssClient = require 'jtaliyunoss'
 novelDbClient = require('jtmongodb').getClient 'novel'
+novel = require './novel'
+{Qidian, US23} = require 'jtnovel'
 
 
 pageContentHandler = 
@@ -16,8 +19,7 @@ pageContentHandler =
       header : webConfig.getHeader req.url
     eachPageItemTotal = 28
     page = GLOBAL.parseInt req.params.page || 1
-    query = 
-      publish : true
+    query = {}
     options = 
       limit : eachPageItemTotal
     query.type = req.params.type if req.params.type?
@@ -25,7 +27,7 @@ pageContentHandler =
       count : (cbf) ->
         novelDbClient.count 'items', query, cbf
       docs : (cbf) ->
-        novelDbClient.find 'items', query, options, 'author type name desc', (err, docs) ->
+        novelDbClient.find 'items', query, options, 'author type name desc bookId', (err, docs) ->
           cbf err, docs
     }, (err, results) ->
       count = results.count
@@ -129,53 +131,70 @@ pageContentHandler =
       msg : id
     }
 
-# finished = false
-# skip = 0
-# categories = []
-# setTimeout () ->
-#   async.whilst () ->
-#     !finished
-#   , (cbf) ->
-#     novelDbClient.find 'items', {publish : true}, {skip : skip}, (err, docs) ->
-#       console.dir "skip:#{skip}"
-#       if err
-#         cbf err
-#       else if !docs?.length
-#         finished = true
-#         cbf null
-#       else
-#         skip += docs.length
-#         async.eachLimit docs, 5, (doc, cbf) ->
-#           if !~_.indexOf categories, doc.type
-#             categories.push doc.type
-#           process.nextTick () ->
-#             cbf null
-#         , (err) ->
-#           cbf err
-#   , (err) ->
-#     console.dir categories
-#     console.dir 'complete'
-#     if err
-#       console.error err
-# , 1000
+  ossSync : (req, res, cbf) ->
+    novelPath = '/Users/Tree/novel'
+    ossClient = new OssClient 'akuluq6no78cynryy8nfbl23', 'k6k0jKekWlZn0ciqKLZr+mwrozo='
+    syncPath = (filePath, cbf) ->
+      completeTotal = 0
+      failFiles = []
+      async.waterfall [
+        (cbf) ->
+          jtfs.getFiles filePath, cbf
+        (infos, cbf) ->
+          jtfs.getFiles infos.dirs, cbf
+        (infos, cbf) ->
+          async.eachLimit infos.files, 10, (file, cbf) ->
+            if !(completeTotal % 10)
+              console.dir completeTotal
+            completeTotal++
+            ossPath = file.substring novelPath.length + 1
+            ossClient.updateObject 'vicansonovel', ossPath, file, (err) ->
+              if err
+                failFiles.push file
+              cbf null
+          , cbf
+      ], (err) ->
+        cbf err, failFiles
+        console.dir 'complete'
+    async.waterfall [
+      (cbf) ->
+        jtfs.getFiles novelPath, cbf
+      (infos, cbf) ->
+        failFiles = []
+        async.eachLimit infos.dirs, 1, (dir, cbf) ->
+          syncPath dir, (err, files) ->
+            failFiles = failFiles.concat files
+        , cbf
+    ], (err) ->
+      if err
+        console.dir err
+      console.dir failFiles
+      console.dir 'all complete'
 
-# test = (id, cbf) ->
-#   new Novel23US(id, '/Users/Tree/novel').start (err, data) ->
-#     if err
-#       console.dir id
-#       console.dir err
-#     else if data
-#       novelDbClient.findAndRemove 'items', {bookId : data.bookId}, (err) ->
-#         novelDbClient.save 'items', data, () ->
-#           console.dir "#{id} success"
-#     cbf null
-# arr = _.range 26480, 30000
-# async.eachLimit arr, 2, (item, cbf) ->
-#   test item, cbf
-# , (err) ->
-#   setTimeout () ->
-#     console.dir 'all complete'
-#   , 1000
+  sync : (req, res, cbf) ->
+    novel.sync (err) ->
+      if err
+        cbf err
+      else
+        cbf null, {
+          code : 0
+          msg : 'sync novel success!'
+        }
+  update : (req, res, cbf) ->
+
+
+  updateAll : (req, res, cbf) ->
+    query = 
+      'sourceInfo.us23' : 
+        '$exists' : true
+    novel.updateAll query, (err) ->
+      if err
+        cbf err
+      else
+        cbf null, {
+          code : 0
+          msg : 'update all success!'  
+        }
 
 
 module.exports = pageContentHandler

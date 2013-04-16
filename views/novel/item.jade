@@ -7,9 +7,9 @@ block bodyContainer
     - var baseUrl = viewData.baseUrl;
     h1.title #{novel.name}
     .pagesContainer
-      - var pages = novel.pages;
-      each pageInfo, i in pages
+      - var chapterInfos = novel.chapterInfos;
+      each chapterInfo, i in chapterInfos
         - var pageClass = ['page'];
         if Math.floor(i / 5) % 2 === 0
           - pageClass.push('evenPage', 'pageBorderRight');
-        a(class=pageClass, target='_blank', href='#{baseUrl}/page/#{i + 1}') #{pageInfo.title}
+        a(class=pageClass, target='_blank', href='#{baseUrl}/page/#{i + 1}') #{chapterInfo.title}

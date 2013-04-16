@@ -4,6 +4,8 @@ jQuery ($) ->
     if !data
       return
     data = JSON.parse data
+    if !data
+      return
     articleContentObj = $ '.articleContent'
     content = data.title
     if data.title
@@ -13,24 +15,29 @@ jQuery ($) ->
         height : 30
       appendToEditItem createConfig, articleContentObj, content
 
-    _.each data.content, (item) ->
-      content = item.value
-      if item.tag == 'subtitle'
-        createConfig = 
-          tip : '请输入子标题：'
-          itemClass : 'inputSubTitle'
-          height : 30
-      else if item.tag == 'code'
-        createConfig = 
-          tip : '请输入代码：'
-          itemClass : 'inputCode'
-          height : 120
-      else if item.tag == 'content'
-        createConfig = 
-          tip : '请输入内容：'
-          itemClass : 'inputContent'
-          height : 60
-      appendToEditItem createConfig, articleContentObj, content
+    # _.each data.content, (item) ->
+    #   content = item.value
+    #   if item.tag == 'subtitle'
+    #     createConfig = 
+    #       tip : '请输入子标题：'
+    #       itemClass : 'inputSubTitle'
+    #       height : 30
+    #   else if item.tag == 'code'
+    #     createConfig = 
+    #       tip : '请输入代码：'
+    #       itemClass : 'inputCode'
+    #       height : 120
+    #   else if item.tag == 'content'
+    #     createConfig = 
+    #       tip : '请输入内容：'
+    #       itemClass : 'inputContent'
+    #       height : 600
+    if data.content
+      createConfig = 
+        tip : '请输入内容：'
+        itemClass : 'inputContent'
+        height : 600
+      appendToEditItem createConfig, articleContentObj, data.content
 
   appendToEditItem = (createConfig, articleContentObj, content) ->
     $('<p />').html(createConfig.tip).appendTo articleContentObj
@@ -46,6 +53,9 @@ jQuery ($) ->
     editor.next('.CodeMirror').find('.CodeMirror-scroll').height createConfig.height
     return editor
 
+  $('.tags').on 'click', '.btn', (e, saveType) ->
+    $(@).toggleClass 'selected'
+
   $('.controlBtns').on 'click', '.btn', (e, saveType) ->
     obj = $ @
     index = obj.index()
@@ -54,19 +64,19 @@ jQuery ($) ->
         tip : '请输入标题：'
         itemClass : 'inputTitle'
         height : 30
-      when 1 then createConfig = 
-        tip : '请输入子标题：'
-        itemClass : 'inputSubTitle'
-        height : 30
-      when 3 then createConfig = 
-        tip : '请输入代码：'
-        itemClass : 'inputCode'
-        height : 120
-      when 4 then createConfig = null
+      # when 1 then createConfig = 
+      #   tip : '请输入子标题：'
+      #   itemClass : 'inputSubTitle'
+      #   height : 30
+      # when 3 then createConfig = 
+      #   tip : '请输入代码：'
+      #   itemClass : 'inputCode'
+      #   height : 120
+      when 2 then createConfig = null
       else createConfig = 
         tip : '请输入内容：'
         itemClass : 'inputContent'
-        height : 60
+        height : 600
     articleContentObj = $ '.articleContent'
     if createConfig
       editor = appendToEditItem createConfig, articleContentObj
@@ -85,16 +95,16 @@ jQuery ($) ->
         else
           tag = 'content'
         if tag
-          content.push {
-            tag : tag
-            value : obj.data('codeMirrorEditor').getValue()
-          }
+          content = obj.data('codeMirrorEditor').getValue()
       postData.content = content
       if saveType
         localStorage['savearticle'] = JSON.stringify postData
       else
-        localStorage['savearticle'] = null
+        # localStorage['savearticle'] = null
         clearInterval autoSaveTimer
+        postData.tags = $('.tags .btn.selected').map(() ->
+          $(@).text()
+        ).toArray()
         $.ajax({
           url : '/savearticle'
           type : 'post'
@@ -102,8 +112,23 @@ jQuery ($) ->
         }).done (data) ->
           console.dir data
 
+  preview = () ->
+    inputContentObj = $ '.articleContent .userTextArea.inputContent'
+    if inputContentObj.length
+      content = inputContentObj.data('codeMirrorEditor').getValue()
+    inputTitleObj = $ '.articleContent .userTextArea.inputTitle'
+    if inputTitleObj.length
+      title = inputTitleObj.data('codeMirrorEditor').getValue()
+    if content
+      $('#contentContainer .preview .article .content').html markdown.toHTML content
+
+      $('#contentContainer .preview .article .content pre code').each (i, e) ->
+        hljs.highlightBlock e
+    if title
+      $('#contentContainer .preview .article .title a').html title
   restoreArtilce()
+  preview()
   autoSaveTimer = setInterval () ->
-    ;
-    # $('.controlBtns .saveBtn').trigger 'click', ['localStorage']
-  , 2000
+    preview()
+    $('.controlBtns .saveBtn').trigger 'click', ['localStorage']
+  , 5000

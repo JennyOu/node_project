@@ -1,162 +1,17 @@
+include ./mixins
+
 extends ./layout
 block bodyContainer
   include ./header
-  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js']);
-  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css'])
-  - fileImporter.importCss(['/statics/blog/stylesheets/articleitem.styl', '/statics/blog/stylesheets/index.styl']);
-  - fileImporter.importJs('/statics/blog/javascripts/index.coffee');
+  - fileImporter.importCss(['/statics/blog/stylesheets/index.styl']);
+  - fileImporter.importJs('/statics/blog/javascripts/index.coffee')
   #contentContainer
-    - var articlesList = viewData.articlesList;
-    .waterfalls
-      each articles in articlesList
-        .waterfall
-          each article in articles
-            .waterfallItem
-              .articleContainer
-                h4.title 
-                  a(href='/article/#{article._id}', target='_blank', title='#{article.title}') #{article.title}
-                - var articleContent = article.content;
-                if articleContent
-                  .content
-                    each content in articleContent
-                      if content.tag == 'content'
-                        p !{content.value}
-                      if content.tag == 'subtitle'
-                        h5.subtitle !{content.value}
-                      else if content.tag == 'code'
-                        textarea.codeContainer !{content.value}
-      //-     .article
-      //-       h5.title epxress的middleware处理
-      //-       .content 
-      //-         p express是基于connect的，如果需要深入了解express的一些功能，最好去看一下
-      //-           a(href='http://www.senchalabs.org/connect/', target='_blank') connect
-      //-           的相关文档。这里主要介绍一下middleware的实现（可以先去参考connect的middleware实现）。
-      //-         textarea.codeContainer.
-      //-           var express = require('express');
-      //-           var app = express();
-      //-           // req request对象, res response对象, next 函数，当调用该函数时，交给下一个处理方法来处理
-      //-           app.use(function(req, res, next){
-      //-             if(req.url === 'index'){
-      //-               next()
-      //-             }else{
-      //-               res.send('success');
-      //-             }
-      //-           });
-      //-           app.use(function(req, res, next){
-      //-             res.send('index');
-      //-           });
-      //-         p 如上面代码所示，添加了两个use的处理函数，在第一个function里，首先判断请求的url是否等于index，如果否，则返回success。否则调用next，交给下一个处理函数处理。在第二个function里，直接返回index。
-      //-         p 由此我们可以知道，express中use的function会以列表的形式保存起来，每一个http请求到来时，它会从第一个开始调用，若该函数有调用next，则将给下一个处理函数，以此类推。那么我们自己写middleware的时候需要注意哪些问题呢？一、是否完整的http请求处理，还是只是部分（如：输出log，添加一些标记）；二、如果快速判断某一http请求是否符合当前的middleware；三、各种的middleware顺序如何放置。
-      //-         textarea.codeContainer.
-      //-           var staticHandler = function(){
-      //-             var staticUrlPrefix = '/static/';
-      //-             return function(req, res, next){
-      //-               if(req.url.indexOf(staticUrlPrefix) === 0){
-      //-                 //静态文件处理
-      //-               }else{
-      //-                 next();
-      //-               }
-      //-             }
-      //-           }
-      //-           var httpLogger = function(){
-      //-             var logger = log4js.getLogger();
-      //-             return function(req, res, next){
-      //-               logger.info(req.url);
-      //-               next();
-      //-             }
-      //-           }
-      //-           app.use(httpLogger());
-      //-           app.use(staticHandler());
-      //-           app.use(express.bodyParser());
-      //-           app.use(express.methodOverride());
-      //-           app.use(app.router);
-      //-         p 如上代码所示，输出log的方法是所有的http请求都输出的，因此放在最前（要注意这个方法只是输出log，并不做任何的处理，因此必须调用next）。而staticHandler放在第二是因为打开一个网页，静态文件的请求占了绝大部分，因此放在第二位能提高处理效率（在处理方法中对url的前缀作判断，能更快速的判断该URL请求是否静态文件请求，而不用去查找是否有相对应的文件才知道是否静态文件请求，当然必须写代码的时候，把静态文件的请求url作统一）。
-      //-         textarea.codeContainer.
-      //-           app.use(session());
-      //-           app.use(app.router);
-      //-           app.use(staticHandler());
-      //-         p 如上代码所示，这是一种错误的用法，session对session作处理，很多人写代码的时候，都喜欢方便，直接写到app.use里面，这样就会导致所有经过的请求都会去获取一次session（如果session保存在redis之类的估计服务器还能接受），session应该在真正获取的http请求中才去获取（因为很大一部分请求都是不需要验证用户的）。staticHandler写在了最后面，首先就会产生前面所说的，每个静态文件的请求都会获取一次session，还有先经过router再到静态文件，那么每个静态文件的请求url都会去判断一个router部分，这些都是无意义的执行操作。
-      //-         p 总结：express中的middleware说实在就是一个http处理函数，如果该函数能处理完整个http请求，则不用调用next；如果只是作一些log或者标记之类的处理，则在处理完之后调用next；要想提高处理效率，把http请求概率最大可能的处理函数放在前面，而且尽量有简单的方法来判断该http请求是否符合该处理（如上面的静态文件的处理），需要查询数据库的操作，尽量只在需要的时候才调用。
-
-      //-     .infoList
-      //-       .authorInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 腻味
-      //-           span 添加Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //-       .commenterInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 匿名用户
-      //-           span 评论Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //-   .waterfallItem
-      //-     .article
-      //-       h5.title Raphaël Raphael.js...
-      //-       p.content 最近迷恋网页矢量图形处理方案，仔细研究了一个很优秀的 Javascript 矢量库，很是强大。虽然这个库很强大，但是他几乎默默无闻，而且唯一的资料，就是原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了。最近迷恋网页矢量图形处理方案，仔细研究了一个很优秀的 Javascript 矢量库，很是强大。虽然这个库很强大，但是他几乎默默无闻，而且唯一的资料，就是原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了.
-      //-     .infoList
-      //-       .authorInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 腻味
-      //-           span 添加Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //-       .commenterInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 匿名用户
-      //-           span 评论Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //- .waterfall
-      //-   .waterfallItem
-      //-     .article
-      //-       h5.title Raphaël Raphael.js...
-      //-       p.content 最近迷恋网页矢量图形处理方案，仔细研究了一个很优秀的 Javascript 矢量库，很是强大。虽然这个库很强大，但是他几乎默默无闻，而且唯一的资料，就是原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了。矢量库，很是强大。虽然这个库很强大，但是他几乎默默无闻，而且唯一的资料，就是原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了。
-      //-     .infoList
-      //-       .authorInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 腻味
-      //-           span 添加Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //-       .commenterInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 匿名用户
-      //-           span 评论Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //- .waterfall
-      //-   .waterfallItem
-      //-     .article
-      //-       h5.title Raphaël Raphael.js...
-      //-       p.content 最近迷恋网页矢量图形处理方案，仔细研究了一个很优秀的 Javascript 矢量库，很是强大。虽然这个库很强大，但是他几乎默默无闻，而且唯一的资料，就是原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了。原作者写的英文API。最近加班加点，终于把原版英文帮助文档翻译为中文了。
-      //-     .infoList
-      //-       .authorInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 腻味
-      //-           span 添加Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
-      //-       .commenterInfo.infoItem
-      //-         a.avatar(href='javascript:;')
-      //-           img(src='http://tp1.sinaimg.cn/2398226332/50/5648689061/1')
-      //-         p
-      //-           a(href='javascript:;') 匿名用户
-      //-           span 评论Raphaël Raphael.js...
-      //-           a(href='javascript:;') javascript
-      //-           span (22小时之前)
+    #slideBar
+      include ./about
+      include ./recommendations
+      include ./utils
+    - var articles = viewData.articles;
+    if articles
+      .articles
+        each article in articles
+          mixin article(article)

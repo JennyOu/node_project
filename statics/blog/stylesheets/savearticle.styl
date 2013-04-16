@@ -1,18 +1,25 @@
-@import "./common"
-@import './mixins/gradients'
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
 #contentContainer
-  width CONTENT_WIDTH
   margin HEADER_HEIGHT + SPACING_VALUE auto auto
-  .controlBtns
-    overflow hidden
-    .btn
-      float left
-      padding 5px 10px
-      background linear-gradient(top, #fff, #e6e6e6)
-  .articleContent
-    height 500px
-    overflow-y scroll
-    .userTextArea
-      width 100%
-    .CodeMirror
-      margin-bottom 20px
+  .editContainer
+    float left
+    width 50%
+    .controlBtns, .tags
+      margin 10px
+      overflow hidden
+      .btn
+        float left
+        padding 5px 10px
+        vicansoGradient #fff, #e6e6e6
+        &.selected
+          color red
+    .articleContent
+      margin 0 10px
+      .userTextArea
+        width 100%
+      .CodeMirror
+        margin-bottom 20px
+  .preview
+    float right
+    width 50%

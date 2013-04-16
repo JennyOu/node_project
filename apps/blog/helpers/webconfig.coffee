@@ -3,17 +3,25 @@ _ = require 'underscore'
 
 webConfig = 
   getHeader : (requestUrl) ->
-    urlPrefix = '/blog'
-    requestUrl = decodeURI(requestUrl).substring urlPrefix.length
+    # urlPrefix = '/blog'
+    # requestUrl = decodeURI(requestUrl).substring urlPrefix.length
     navData = [
       {
         url : '/'
         title : '首页'
       }
-      # {
-      #   url : '/node'
-      #   title : 'NODE'
-      # }
+      {
+        url : '/tag/node'
+        title : 'node'
+      }
+      {
+        url : '/tag/javascript'
+        title : 'javascript'
+      }
+      {
+        url : '/tag/others'
+        title : 'others'
+      }
     ]
     
     urlList = _.pluck navData, 'url'

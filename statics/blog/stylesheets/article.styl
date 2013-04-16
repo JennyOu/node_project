@@ -1,10 +1,69 @@
-@import "./common"
-#contentContainer
-  width CONTENT_WIDTH
-  margin HEADER_HEIGHT + SPACING_VALUE auto auto
-  .articleContainer
-    line-height 24px
-    .content p
-      text-indent 2em
-    .subtitle
-      margin-top 20px
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+.article
+  background-color #fff
+  overflow hidden
+  vicansoBoxShadow 1px, rgba(0,0,0,0.10)
+  vicansoBorderRadius()
+  .author
+    color #999
+    text-shadow 0px 1px 0px #fff
+    padding 5px
+    margin-bottom 20px
+    background-color #fafafa
+    border-bottom 1px dashed #ddd
+    font-size 12px
+    line-height 32px
+    overflow hidden
+    position relative
+    vicansoBorderRadius()
+    img
+      border 1px solid #fff
+      height 30px
+      width 30px
+      margin-right 20px
+      float left
+      vicansoBoxShadow 1px, #dadada
+    .createTime
+      position absolute
+      background-color #e5e5e5
+      padding 5px 8px
+      line-height 12px
+      top 10px
+      right 10px
+      vicansoBorderRadius 5px
+      vicansoOriginalBoxShadow 'inset 0px 1px 0px rgba(0,0,0,0.10)', 'inset 0px -1px 0px #fff', 'inset 0px 2px 2px rgba(100,100,100,0.10)'
+  .info
+    .tags
+      float right
+      .tag
+        background-color #7c5229
+        border 1px solid #422100
+        margin-right 15px
+        padding 2px 10px
+        color #222
+        text-shadow none
+        vicansoBorderRadius 3px
+    .title
+      font-size 24px
+      line-height 32px
+      padding-left 20px
+  .content
+  	p, ul
+    	margin 15px 20px
+    ul li
+    	list-style-position inside
+    	list-style-type square
+    pre code
+      margin 20px 0px
+      max-height 300px
+    .ellipsis
+      color #999
+  .behaviorBtns
+    margin 10px 20px 20px 20px
+  .btn
+    vicansoBtn #0054a6, #fff
+    display inline-block
+    padding 6px 10px
+    &:hover
+      background-color #004c95

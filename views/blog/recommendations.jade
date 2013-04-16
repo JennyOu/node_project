@@ -1,0 +1,14 @@
+- var recommendations = viewData.recommendations;
+if recommendations
+  - fileImporter.importCss('/statics/blog/stylesheets/recommendations.styl');
+  .recommendationsContainer
+    h3 Articles
+    ul.recommendations
+      each recommendation, i in recommendations
+        - var itemClass = ['item'];
+        if i === 0
+          - itemClass.push('first');
+        li(class=itemClass)
+          a(href='/article/#{recommendation._id}', target='_blank') #{recommendation.title}
+          span.createTime #{recommendation.createTime}
+          | #{recommendation.authorInfo.name}
