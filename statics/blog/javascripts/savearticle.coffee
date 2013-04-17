@@ -1,4 +1,5 @@
 jQuery ($) ->
+  window.TIME_LINE.time 'runSaveArticleJs'
   restoreArtilce = () ->
     data = localStorage['savearticle']
     if !data
@@ -132,3 +133,5 @@ jQuery ($) ->
     preview()
     $('.controlBtns .saveBtn').trigger 'click', ['localStorage']
   , 5000
+
+  window.TIME_LINE.timeEnd 'runSaveArticleJs'

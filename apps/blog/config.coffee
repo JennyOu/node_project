@@ -98,6 +98,12 @@ blogMiddleware = (req, res, next) ->
 config = 
   getAppPath : () ->
     return __dirname
+  authorization : () ->
+    admin = SETTING.admin
+    (req, res, next) ->
+      if req.query?.name == admin
+        req.level = 9
+      next()
   isProductionMode : () ->
     return process.env.NODE_ENV == 'production'
   getStaticsHost : () ->

@@ -27,6 +27,7 @@ routeInfos = [
     type : 'get'
     route : '/savearticle'
     jadeView : 'blog/savearticle'
+    middleware : [appConfig.authorization()]
     staticsHost : staticsHost
     handler : pageContentHandler.saveArticle
   }

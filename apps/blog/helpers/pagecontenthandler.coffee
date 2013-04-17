@@ -105,12 +105,15 @@ pageContentHandler =
           msg : 'the data is null'
         }
     else
-      viewData =
-        header : webConfig.getHeader req.url
-      cbf null, {
-        title : '追逐javascript的灵魂精粹'
-        viewData : viewData
-      }
+      if req.level != 9
+        res.redirect '/'
+      else
+        viewData =
+          header : webConfig.getHeader req.url
+        cbf null, {
+          title : '追逐javascript的灵魂精粹'
+          viewData : viewData
+        }
   mergeAjax : (req, res, cbf) ->
     console.dir req.body
     res.send [

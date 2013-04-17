@@ -9,8 +9,23 @@ html(lang='zh-CN')
     title= title
     link(rel='icon', href='/statics/blog/images/favicon.png', type='image/x-icon')
     script(type='text/javascript')
-      window.TIME_LINE = {}
-      TIME_LINE.start = new Date();
+      //- window.TIME_LINE = 
+      //-   logs : {}
+      //-   startTimes : {}
+      //-   time : (tag) ->
+      //-     @startTimes[tag] = new Date().getTime();
+      //-     @
+      //-   timeEnd : (tag) ->
+      //-     startTimes = @startTimes
+      //-     start = startTimes[tag]
+      //-     if start
+      //-       @logs[tag] = new Date().getTime() - start
+      //-     delete startTimes[tag]
+      //-     @
+      //-   getLogs : () ->
+      //-     @logs
+        window.TIME_LINE={logs:{},startTimes:{},time:function(a){this.startTimes[a]=new Date().getTime();return this},timeEnd:function(a){var c,b;b=this.startTimes;c=b[a];if(c){this.logs[a]=new Date().getTime()-c}delete b[a];return this},getLogs:function(){return this.logs}};
+        window.TIME_LINE.time('html');
     //CSS_FILES_CONTAINER
     //if lt IE 9
       script(src='/statics/common/javascripts/utils/html5shiv.min.js', type='text/javascript')
@@ -21,6 +36,6 @@ html(lang='zh-CN')
     block bodyContainer
   - fileImporter.importJs('/statics/blog/javascripts/global.coffee');
   script(type='text/javascript')
-    TIME_LINE.htmlLoadedComplete = new Date();
+    window.TIME_LINE.timeEnd('html');
   //JS_FILES_CONTAINER
   //- script(src='/nocacheinfo.js', type='text/javascript')
