@@ -23,6 +23,7 @@ getAppConfigList = (cbf) ->
     fs.readdir "#{rootPath}/apps", (err, files) ->
       getFiles files
   else
+    launchAppList.unshift 'common'
     getFiles launchAppList
 
 

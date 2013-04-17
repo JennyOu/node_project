@@ -11,7 +11,7 @@ config =
       redisConfig : 
         name : 'vicanso'
         uri : 'redis://localhost:10010'
-        pwd : 'MY_REDIS_PWD'
+        pwd : SETTING.redis.pwd
       app : 
         firstMiddleware : healthChecks
     }
