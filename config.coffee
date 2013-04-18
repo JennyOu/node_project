@@ -2,7 +2,6 @@ path = require 'path'
 commander = require 'commander'
 _ = require 'underscore'
 
-
 do (commander) ->
   splitArgs = (val) ->
     return val.split ','

@@ -8,10 +8,7 @@ healthChecks = (req, res, next) ->
 config = 
   getAppConfig : () ->
     {
-      redisConfig : 
-        name : 'vicanso'
-        uri : 'redis://localhost:10010'
-        pwd : SETTING.redis.pwd
+      redisConfig : SETTING.redis
       app : 
         firstMiddleware : healthChecks
     }

@@ -97,7 +97,7 @@ blogMiddleware = (req, res, next) ->
 
 config = 
   getAppPath : () ->
-    return __dirname
+    __dirname
   authorization : () ->
     admin = SETTING.admin
     (req, res, next) ->
@@ -105,19 +105,17 @@ config =
         req.level = 9
       next()
   isProductionMode : () ->
-    return process.env.NODE_ENV == 'production'
+    process.env.NODE_ENV == 'production'
   getStaticsHost : () ->
     if @isProductionMode()
-      return 'http://s.vicanso.com'
+      'http://s.vicanso.com'
     else
-      return null
+      null
   getAppConfig : () ->
-    return {
-      mongoDbConfig : 
-        dbName : 'vicanso'
-        uri : 'mongodb://localhost:10020/vicanso'
+    {
+      mongoDbConfig : SETTING.mongoDb
       app : 
-        routeInfos : wrapperRouteHandler require './routes'
+        routeInfos : require './routes'
     }
      
 module.exports = config

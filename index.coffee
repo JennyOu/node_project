@@ -51,11 +51,19 @@ startApps = (appConfigList, cbf) ->
     defaultOptions = appConfigs.pop()
     defaultOptions.routeInfos ?= []
     defaultOptions.middleware ?= []
+    defaultOptions.firstMiddleware ?= []
+
+    mergeConfig = (key, config) ->
+      if _.isArray config[key]
+        defaultOptions[key] = defaultOptions[key].concat config[key]
+      else if config[key]
+        defaultOptions[key].push config[key]
+
     _.each appConfigs, (appConfig) ->
-      if appConfig.routeInfos
-        defaultOptions.routeInfos =  defaultOptions.routeInfos.concat appConfig.routeInfos
-      if appConfig.middleware
-        defaultOptions.middleware = defaultOptions.middleware.concat appConfig.middleware
+      mergeConfig 'routeInfos', appConfig
+      mergeConfig 'middleware', appConfig
+      mergeConfig 'firstMiddleware', appConfig
+
     defaultOptions
   defaultPort = config.getListenPort()
   _.each appConfigList, (appConfig) ->

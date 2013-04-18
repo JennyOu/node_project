@@ -8,7 +8,7 @@ async = require 'async'
 hljs = require 'highlight.js'
 fs = require 'fs'
 vicansoDbClient = require('jtmongodb').getClient 'vicanso'
-
+statistics = require './statistics'
 
 highLight = (str) ->
   appendLineNo = (code) ->
@@ -54,10 +54,10 @@ pageContentHandler =
 
         doc.ellipsis = doc.content.length - ellipsisContent.length
         doc.content = highLight markdown.toHTML ellipsisContent
-        doc.createTime = doc.createTime.toFormat 'YYYY.MM.DD'
+        doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
         doc
       _.each results[0], (doc) ->
-        doc.createTime = doc.createTime.toFormat 'YYYY.MM.DD'
+        doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
       viewData.recommendations = results[0]
       cbf null, {
         title : 'javascript的淡望'
@@ -65,12 +65,16 @@ pageContentHandler =
       }
   article : (req, res, cbf) ->
     id = req.params.id
+    record = 
+      type : 'view'
+      id : id
+    statistics.record record
     vicansoDbClient.findById 'articles', id, (err, doc) ->
       if err
         cbf err
         return
       doc.content = highLight markdown.toHTML doc.content
-      doc.createTime = doc.createTime.toFormat 'YYYY.MM.DD'
+      doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
       viewData =
         header : webConfig.getHeader req.url
         article : doc
@@ -114,6 +118,10 @@ pageContentHandler =
           title : '追逐javascript的灵魂精粹'
           viewData : viewData
         }
+  userInfo : (req, res, cbf) ->
+    cbf null, {
+      nick : 'tree'
+    }
   mergeAjax : (req, res, cbf) ->
     console.dir req.body
     res.send [

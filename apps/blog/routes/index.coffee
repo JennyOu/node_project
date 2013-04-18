@@ -18,6 +18,10 @@ routeInfos = [
     handler : pageContentHandler.article
   }
   {
+    route : '/nocacheinfo'
+    handler : pageContentHandler.userInfo
+  }
+  {
     route : '/node'
     jadeView : 'blog/node'
     staticsHost : staticsHost
