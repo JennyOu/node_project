@@ -27,17 +27,17 @@ window.MergeAjax =
 
 jQuery ($) ->
 
-  option1 = 
-    url : '/test1'
+  # option1 = 
+  #   url : '/test1'
 
-  option2 =
-    url : '/test2'
-    type : 'post'
-    data : 
-      pwd : '123456'
+  # option2 =
+  #   url : '/test2'
+  #   type : 'post'
+  #   data : 
+  #     pwd : '123456'
 
-  MergeAjax.handler option1, (err, data) ->
-    console.dir data
+  # MergeAjax.handler option1, (err, data) ->
+  #   console.dir data
 
-  MergeAjax.handler option2, (err, data) ->
-    console.dir data
+  # MergeAjax.handler option2, (err, data) ->
+  #   console.dir data

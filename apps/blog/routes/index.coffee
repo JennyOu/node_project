@@ -1,7 +1,7 @@
 appConfig = require '../config'
 appPath = appConfig.getAppPath()
 pageContentHandler = require "#{appPath}/helpers/pagecontenthandler"
-# sessionParser = require('jtweb').sessionParser()
+sessionParser = require('jtweb').sessionParser()
 staticsHost = appConfig.getStaticsHost()
 
 routeInfos = [
@@ -18,7 +18,9 @@ routeInfos = [
     handler : pageContentHandler.article
   }
   {
-    route : '/nocacheinfo'
+    type : 'all'
+    route : '/userinfo'
+    middleware : [sessionParser]
     handler : pageContentHandler.userInfo
   }
   {
@@ -28,16 +30,21 @@ routeInfos = [
     handler : pageContentHandler.node
   }
   {
-    type : 'get'
-    route : '/savearticle'
+    route : ['/savearticle', '/savearticle/:id']
     jadeView : 'blog/savearticle'
-    middleware : [appConfig.authorization()]
+    middleware : [sessionParser]
     staticsHost : staticsHost
     handler : pageContentHandler.saveArticle
   }
   {
     type : 'post'
-    route : '/savearticle'
+    route : '/statistics'
+    handler : pageContentHandler.statistics
+  }
+  {
+    type : 'post'
+    route : ['/savearticle', '/savearticle/:id']
+    middleware : [sessionParser]
     handler : pageContentHandler.saveArticle
   }
   {

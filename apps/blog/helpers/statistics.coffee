@@ -1,4 +1,4 @@
-vicansoDbClient = require('jtmongodb').getClient 'vicanso'
+blogDbClient = require('jtmongodb').getClient 'blog'
 
 records = []
 recordTimer = null
@@ -6,12 +6,10 @@ recordTimer = null
 statistics = 
   record : (data) ->
   	records.push data
-  	vicansoDbClient.find 'statistics', {}, (err, docs) ->
-  		console.dir docs
   	if !recordTimer
   		recordTimer = GLOBAL.setTimeout () ->
   			recordsBak = records
-  			vicansoDbClient.save 'statistics', recordsBak, (err) ->
+  			blogDbClient.save 'statistics', recordsBak, (err) ->
   				if err
   					console.dir err
   					records = records.concat recordsBak

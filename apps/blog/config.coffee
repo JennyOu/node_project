@@ -3,7 +3,7 @@ SETTING = require './setting.json'
 weibo = require 'weibo'
 weibo.init 'weibo', SETTING.weibo.appKey, SETTING.weibo.appSecret
 
-do () ->
+init = () ->
   jtWeb = require 'jtweb'
   appName = SETTING.appName
   jtWeb.addInfoParser (req) ->
@@ -111,11 +111,12 @@ config =
       'http://s.vicanso.com'
     else
       null
+  getMongoDbConfig : () ->
+    SETTING.mongoDb
+  init : init
   getAppConfig : () ->
     {
-      mongoDbConfig : SETTING.mongoDb
-      app : 
-        routeInfos : require './routes'
+      routeInfos : require './routes'
     }
      
 module.exports = config

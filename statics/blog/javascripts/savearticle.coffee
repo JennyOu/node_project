@@ -1,12 +1,15 @@
 jQuery ($) ->
   window.TIME_LINE.time 'runSaveArticleJs'
   restoreArtilce = () ->
-    data = localStorage['savearticle']
-    if !data
-      return
-    data = JSON.parse data
-    if !data
-      return
+    if window.ARTICLE
+      data = window.ARTICLE
+    else
+      data = localStorage['savearticle']
+      if !data
+        return
+      data = JSON.parse data
+      if !data
+        return
     articleContentObj = $ '.articleContent'
     content = data.title
     if data.title
@@ -106,12 +109,20 @@ jQuery ($) ->
         postData.tags = $('.tags .btn.selected').map(() ->
           $(@).text()
         ).toArray()
+        url = '/savearticle'
+        if window.ARTICLE
+          url = "#{url}/#{window.ARTICLE._id}"
         $.ajax({
-          url : '/savearticle'
+          url : url
           type : 'post'
           data : postData
-        }).done (data) ->
-          console.dir data
+        }).success (data) ->
+          if data.code == 0
+            localStorage['savearticle'] = null
+            alert '成功保存'
+          else
+            alert '保存失败'
+          
 
   preview = () ->
     inputContentObj = $ '.articleContent .userTextArea.inputContent'

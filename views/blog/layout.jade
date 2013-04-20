@@ -9,27 +9,13 @@ html(lang='zh-CN')
     title= title
     link(rel='icon', href='/statics/blog/images/favicon.png', type='image/x-icon')
     script(type='text/javascript')
-      //- window.TIME_LINE = 
-      //-   logs : {}
-      //-   startTimes : {}
-      //-   time : (tag) ->
-      //-     @startTimes[tag] = new Date().getTime();
-      //-     @
-      //-   timeEnd : (tag, startTag) ->
-      //-     startTimes = @startTimes
-      //-     start = startTimes[tag] || startTimes[startTag]
-      //-     if start
-      //-       @logs[tag] = new Date().getTime() - start
-      //-     @
-      //-   getLogs : () ->
-      //-     @logs
         window.TIME_LINE={logs:{},startTimes:{},time:function(a){this.startTimes[a]=new Date().getTime();return this},timeEnd:function(a,c){var d,b;b=this.startTimes;d=b[a]||b[c];if(d){this.logs[a]=new Date().getTime()-d}return this},getLogs:function(){return this.logs}};
         window.TIME_LINE.time('html');
     //CSS_FILES_CONTAINER
     //if lt IE 9
       script(src='/statics/common/javascripts/utils/html5shiv.min.js', type='text/javascript')
-    - fileImporter.importCss('/statics/blog/stylesheets/global.styl');
-    - fileImporter.importJs(['http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js', '/statics/common/javascripts/utils/underscore.min.js']);
+    - fileImporter.importCss(['/statics/blog/stylesheets/global.styl', '/statics/blog/stylesheets/vicansoui.styl']);
+    - fileImporter.importJs(['http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js', '/statics/common/javascripts/utils/underscore.min.js', '/statics/common/javascripts/utils/async.min.js']);
     //- - fileImporter.importJs(['http://lib.sinaapp.com/js/jquery/1.8.3/jquery.min.js', 'http://lib.sinaapp.com/js/underscore/1.3.3/underscore.min.js'])
   body
     block bodyContainer

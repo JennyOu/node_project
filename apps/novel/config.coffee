@@ -18,25 +18,26 @@ config =
       return 'http://s.vicanso.com'
     else
       return null
+  getMongoDbConfig : () ->
+    {
+      dbName : 'novel'
+      uri : 'mongodb://localhost:10020/novel'
+    }
   getAppConfig : () ->
-    return {
-      mongoDbConfig : 
-        dbName : 'novel'
-        uri : 'mongodb://localhost:10020/novel'
-      app : 
-        routeInfos : require './routes'
-        middleware : [novelMiddleware]
+    {
+      routeInfos : require './routes'
+      middleware : [novelMiddleware]
     }
      
-do () ->
-  novelDbClient = require('jtmongodb').getClient 'novel'
-  setTimeout () ->
-    novelDbClient.ensureIndex 'items', 'author', () ->
-    novelDbClient.ensureIndex 'items', 'bookId', () ->
-    novelDbClient.ensureIndex 'items', 'name', () ->
-    novelDbClient.ensureIndex 'items', {author : 1, name : 1}, () ->
+# do () ->
+#   novelDbClient = require('jtmongodb').getClient 'novel'
+#   setTimeout () ->
+#     novelDbClient.ensureIndex 'items', 'author', () ->
+#     novelDbClient.ensureIndex 'items', 'bookId', () ->
+#     novelDbClient.ensureIndex 'items', 'name', () ->
+#     novelDbClient.ensureIndex 'items', {author : 1, name : 1}, () ->
 
-    novelDbClient.ensureIndex 'us23', {author : 1, name : 1}, () ->
-  , 500
+#     novelDbClient.ensureIndex 'us23', {author : 1, name : 1}, () ->
+#   , 500
 
 module.exports = config

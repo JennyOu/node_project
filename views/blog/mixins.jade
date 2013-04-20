@@ -1,8 +1,8 @@
 mixin article(data)
   - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/common/stylesheets/monokai.styl']);
-  .article
+  .article(data-id='#{data._id}')
     - var authorInfo = data.authorInfo;
-    .author #{authorInfo.name}（#{authorInfo.contact}）
+    .author #{authorInfo.name}
       span.createTime #{data.createTime}
       img(src='#{authorInfo.profilePic}')
     .info
@@ -21,3 +21,4 @@ mixin article(data)
     if data.readMore
       .behaviorBtns
         a.readmore.btn(href='/article/#{data._id}',  target='_blank') 更多内容...
+        a.like.btn(href='javascript:;') 喜 欢

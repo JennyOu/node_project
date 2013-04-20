@@ -7,7 +7,7 @@ markdown = require('markdown').markdown
 async = require 'async'
 hljs = require 'highlight.js'
 fs = require 'fs'
-vicansoDbClient = require('jtmongodb').getClient 'vicanso'
+blogDbClient = require('jtmongodb').getClient 'blog'
 statistics = require './statistics'
 
 highLight = (str) ->
@@ -38,9 +38,9 @@ pageContentHandler =
     query.tags = tag if tag
     async.parallel [
       (cbf) ->
-        vicansoDbClient.find 'articles', {}, 'title authorInfo createTime', {sort : [['createTime', 'desc']]}, cbf
+        blogDbClient.find 'articles', {}, 'title authorInfo createTime', {sort : [['createTime', 'desc']]}, cbf
       (cbf) ->
-        vicansoDbClient.find 'articles', query, {sort : [['createTime', 'desc']]}, cbf
+        blogDbClient.find 'articles', query, {sort : [['createTime', 'desc']]}, cbf
     ], (err, results) ->
       if err
         cbf err
@@ -69,7 +69,7 @@ pageContentHandler =
       type : 'view'
       id : id
     statistics.record record
-    vicansoDbClient.findById 'articles', id, (err, doc) ->
+    blogDbClient.findById 'articles', id, (err, doc) ->
       if err
         cbf err
         return
@@ -83,45 +83,95 @@ pageContentHandler =
         viewData : viewData
       }
   saveArticle : (req, res, cbf) ->
+    userInfo = req.session.userInfo
+    if !userInfo || userInfo.level != 9
+      res.redirect '/'
+      return
     if req.xhr
       data = req.body
       if data
-        # fs.writeFile './test.json', JSON.stringify(data), (err) ->
-        data.createTime = new Date()
-        data.authorInfo =
-          name : '谢树洲Tree'
-          contact : 'vicansocanbico@gmail.com'
-          profilePic : 'http://tp1.sinaimg.cn/2398226332/50/5660016074/1'
-
-        vicansoDbClient.save 'articles', data, (err) ->
-          if err
-            result = 
-              code : -1
-              msg : 'save artcile fail!'
-          else
-            result = 
-              code : 0
-              msg : 'save artcile success'
-          cbf null, result
+        id = req.params?.id
+        if id
+          blogDbClient.findByIdAndUpdate 'articles', id, data, (err) ->
+            if err
+              result = 
+                code : -1
+                msg : 'modify artcile fail!'
+            else
+              result = 
+                code : 0
+                msg : 'modify artcile success!'
+            cbf null, result
+        else
+          data.createTime = new Date()
+          data.authorInfo = userInfo
+          blogDbClient.save 'articles', data, (err) ->
+            if err
+              result = 
+                code : -1
+                msg : 'save artcile fail!'
+            else
+              result = 
+                code : 0
+                msg : 'save artcile success'
+            cbf null, result
       else
         cbf null, {
           code : -1
           msg : 'the data is null'
         }
     else
-      if req.level != 9
-        res.redirect '/'
+      viewData =
+        header : webConfig.getHeader req.url
+      if req.params?.id
+        blogDbClient.findById 'articles', req.params.id, (err, doc) ->
+          viewData.doc = doc
+          cbf err, {
+            title : '追逐javascript的灵魂精粹'
+            viewData : viewData
+          }
       else
-        viewData =
-          header : webConfig.getHeader req.url
         cbf null, {
           title : '追逐javascript的灵魂精粹'
           viewData : viewData
         }
   userInfo : (req, res, cbf) ->
-    cbf null, {
-      nick : 'tree'
-    }
+    sess = req.session
+    if req.method == 'POST'
+      userInfo = req.body
+      async.waterfall [
+        (cbf) ->
+          blogDbClient.find 'users', {id : userInfo.id}, cbf
+        (info, cbf) ->
+          console.dir info.length
+          if !info.length
+            blogDbClient.save 'users', userInfo, (err) ->
+              cbf err, userInfo
+          else
+            cbf null, info[0]
+      ], (err, userInfo) ->
+        if err
+          cbf err
+        else
+          sess.userInfo = userInfo
+          cbf null, {
+            status : 1
+          }
+    else
+      cbf null, _.omit sess.userInfo || {}, ['_id']
+  statistics : (req, res, cbf) ->
+    data = req.body
+    if data
+      statistics.record data
+      cbf null, {
+        code : 0
+        msg : 'success'
+      }
+    else
+      cbf null, {
+        code : -1
+        msg : 'fail'
+      }
   mergeAjax : (req, res, cbf) ->
     console.dir req.body
     res.send [

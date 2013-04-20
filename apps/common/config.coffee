@@ -6,11 +6,11 @@ healthChecks = (req, res, next) ->
     next()
 
 config = 
+  getRedisConfig : () ->
+    SETTING.redis
   getAppConfig : () ->
     {
-      redisConfig : SETTING.redis
-      app : 
-        firstMiddleware : healthChecks
+      firstMiddleware : healthChecks
     }
      
 module.exports = config

@@ -5,6 +5,9 @@ block bodyContainer
   - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css', '/statics/common/stylesheets/monokai.styl'])
   - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/blog/stylesheets/savearticle.styl']);
   - fileImporter.importJs('/statics/blog/javascripts/savearticle.coffee');
+  if viewData.doc
+    script(type="text/javascript")
+      var ARTICLE = !{JSON.stringify(viewData.doc)};
   #contentContainer
     .preview
       .article
