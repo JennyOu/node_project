@@ -80,30 +80,10 @@ wrapperRouteHandler = (routeInfos) ->
     routeInfo.handler = _.wrap routeInfo.handler, wrapper
   routeInfos
 
-oauth = weibo.oauth {
-  loginPath : '/login'
-  logoutPath : '/logout'
-  blogtypeField : 'type'
-  afterLogin : (req, res, cbf) ->
-    console.dir req.session
-}
-
-blogMiddleware = (req, res, next) ->
-  req.session = {}
-  if req.url == '/healthchecks'
-    res.send 'success'
-  else
-    next()
 
 config = 
   getAppPath : () ->
     __dirname
-  authorization : () ->
-    admin = SETTING.admin
-    (req, res, next) ->
-      if req.query?.name == admin
-        req.level = 9
-      next()
   isProductionMode : () ->
     process.env.NODE_ENV == 'production'
   getStaticsHost : () ->

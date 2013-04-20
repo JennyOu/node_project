@@ -1,4 +1,5 @@
 async = require 'async'
+cluster = require 'cluster'
 _ = require 'underscore'
 require 'date-utils'
 config = require './config'
@@ -57,56 +58,6 @@ settingRedis = (configList, cbf) ->
       initRedis config.getRedisConfig()
   cbf null, configList
 
-# ###*
-#  * startApps 启动apps
-#  * @param  {[type]} getAppConfigList [description]
-#  * @return {[type]}         [description]
-# ###
-# startApps = (appConfigList, cbf) ->
-#   getAppOptions = (appConfigs) ->
-#     defaultOptions = appConfigs.pop()
-#     defaultOptions.routeInfos ?= []
-#     defaultOptions.middleware ?= []
-#     defaultOptions.firstMiddleware ?= []
-
-#     mergeConfig = (key, config) ->
-#       if _.isArray config[key]
-#         defaultOptions[key] = defaultOptions[key].concat config[key]
-#       else if config[key]
-#         defaultOptions[key].push config[key]
-
-#     _.each appConfigs, (appConfig) ->
-#       mergeConfig 'routeInfos', appConfig
-#       mergeConfig 'middleware', appConfig
-#       mergeConfig 'firstMiddleware', appConfig
-
-#     defaultOptions
-#   defaultPort = config.getListenPort()
-#   _.each appConfigList, (appConfig) ->
-#     appConfig.port ?= defaultPort
-#   groupConfigList = _.groupBy appConfigList, 'port'
-#   jtWeb = require 'jtweb'
-#   jtRedis = require 'jtredis'
-
-#   appDefaultOptions = 
-#     appPath : rootPath
-#     redisClient : jtRedis.getClient()
-#     viewsPath : config.getViewsPath()
-#     staticSetting : [
-#       {
-#         mountPath : '/statics'
-#         path : config.getStaticPath()
-#       }
-#       {
-#         mountPath : '/statics'
-#         path : '/Users/Tree/novel_frontcovers'
-#       }
-#     ]
-#     faviconPath : config.getFaviconPath()
-#   _.each groupConfigList, (appConfigs) ->
-#     appOptions = getAppOptions appConfigs
-#     initExpress _.extend {}, appDefaultOptions, appOptions
-#   cbf null
 
 initApp = (configList) ->
   jtLogger = require 'jtlogger'
@@ -185,12 +136,7 @@ initApp = (configList) ->
   console.info "listen port #{config.getListenPort()}" 
 
 
-async.waterfall [
-  getConfigObjs
-  settingMongoDb
-  settingRedis
-  initApp
-]
+
 
 
 initMongoDb = (dbConfigs) ->
@@ -228,10 +174,32 @@ initRedis = (config) ->
   }
 
 
-# async.waterfall [
-#   getAppConfigList
-#   settingMongoDb
-#   settingRedis
-#   startApps
-# ], (err) ->
-#   console.dir 'start node successful!'
+
+clusterHandler = (workerTotal) ->
+  for i in [0...workerTotal]
+    cluster.fork()
+  cluster.on 'online', (worker) ->
+    console.info "worker #{worker.process.pid} is online"
+
+  cluster.on 'exit', (worker) ->
+    console.info "worker #{worker.process.pid} is exit"
+    cluster.fork()
+
+workerHandler = () ->
+  async.waterfall [
+    getConfigObjs
+    settingMongoDb
+    settingRedis
+    initApp
+  ], (err) ->
+    if err
+      console.dir err
+    else
+      console.dir 'start node successful!'
+if config.isProductionMode()
+  if cluster.isMaster
+    clusterHandler require('os').cpus().length
+  else
+    workerHandler()
+else
+  workerHandler()

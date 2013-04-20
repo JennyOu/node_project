@@ -55,7 +55,11 @@ jQuery ($) ->
       }, 200
 
     $('.article .behaviorBtns').on 'click', '.like', () ->
-      id = $(@).closest('.article').attr 'data-id'
+      obj = $ @
+      if obj.hasClass 'liked'
+        return
+      obj.addClass('liked').text '已喜欢'
+      id = obj.closest('.article').attr 'data-id'
       data = 
         type : 'like'
         id : id
