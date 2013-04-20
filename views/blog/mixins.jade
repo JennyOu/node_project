@@ -3,7 +3,7 @@ mixin article(data)
   .article(data-id='#{data._id}')
     - var authorInfo = data.authorInfo;
     .author #{authorInfo.name}
-      span.createTime #{data.createTime}
+      span.createTime #{data.createdAt}
       img(src='#{authorInfo.profilePic}')
     .info
       - var tags = data.tags

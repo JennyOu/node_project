@@ -38,9 +38,9 @@ pageContentHandler =
     query.tags = tag if tag
     async.parallel [
       (cbf) ->
-        blogDbClient.find 'articles', {}, 'title authorInfo createTime', {sort : [['createTime', 'desc']]}, cbf
+        blogDbClient.find 'articles', {}, 'title authorInfo createdAt', {sort : [['createdAt', 'desc']]}, cbf
       (cbf) ->
-        blogDbClient.find 'articles', query, {sort : [['createTime', 'desc']]}, cbf
+        blogDbClient.find 'articles', query, {sort : [['createdAt', 'desc']]}, cbf
     ], (err, results) ->
       if err
         cbf err
@@ -54,10 +54,10 @@ pageContentHandler =
 
         doc.ellipsis = doc.content.length - ellipsisContent.length
         doc.content = highLight markdown.toHTML ellipsisContent
-        doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
+        doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
         doc
       _.each results[0], (doc) ->
-        doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
+        doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
       viewData.recommendations = results[0]
       cbf null, {
         title : 'javascript的淡望'
@@ -74,7 +74,7 @@ pageContentHandler =
         cbf err
         return
       doc.content = highLight markdown.toHTML doc.content
-      doc.createTime = new Date(doc.createTime).toFormat 'YYYY.MM.DD'
+      doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
       viewData =
         header : webConfig.getHeader req.url
         article : doc
@@ -92,6 +92,7 @@ pageContentHandler =
       if data
         id = req.params?.id
         if id
+          data.modifiedAt = new Date()
           blogDbClient.findByIdAndUpdate 'articles', id, data, (err) ->
             if err
               result = 
@@ -103,7 +104,7 @@ pageContentHandler =
                 msg : 'modify artcile success!'
             cbf null, result
         else
-          data.createTime = new Date()
+          data.createdAt = new Date()
           data.authorInfo = userInfo
           blogDbClient.save 'articles', data, (err) ->
             if err
@@ -143,8 +144,8 @@ pageContentHandler =
         (cbf) ->
           blogDbClient.find 'users', {id : userInfo.id}, cbf
         (info, cbf) ->
-          console.dir info.length
           if !info.length
+            userInfo.createdAt = new Date()
             blogDbClient.save 'users', userInfo, (err) ->
               cbf err, userInfo
           else
@@ -173,7 +174,6 @@ pageContentHandler =
         msg : 'fail'
       }
   mergeAjax : (req, res, cbf) ->
-    console.dir req.body
     res.send [
       {
         code : 0
