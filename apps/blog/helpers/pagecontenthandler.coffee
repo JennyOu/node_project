@@ -163,6 +163,7 @@ pageContentHandler =
   statistics : (req, res, cbf) ->
     data = req.body
     if data
+      data.userAgent = req.headers['user-agent']
       statistics.record data
       cbf null, {
         code : 0

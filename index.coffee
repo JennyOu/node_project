@@ -75,6 +75,7 @@ initApp = (configList) ->
 
   app = express()
 
+  app.enable 'trust proxy'
   app.set 'view engine', 'jade'
   app.set 'views', config.getViewsPath()
 

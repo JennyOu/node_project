@@ -8,7 +8,7 @@ jQuery ($) ->
     $('.article').each () ->
       obj = $ @
       id = obj.attr 'data-id'
-      obj.find('.behaviorBtns').append "<a class='btn', href='/savearticle/#{id}', target='_blank'>修改</a>"
+      obj.find('.behaviorBtns').append "<a class='btn', href='/savearticle/#{id}?cache=false', target='_blank'>修改</a>"
   postUserInfo = (userInfo) ->
     $.post('/userinfo?cache=false', userInfo).success () ->
       console.dir arguments
