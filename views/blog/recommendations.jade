@@ -10,5 +10,5 @@ if recommendations
           - itemClass.push('first');
         li(class=itemClass)
           a(href='/article/#{recommendation._id}', target='_blank') #{recommendation.title}
-          span.createTime #{recommendation.createTime}
+          span.createTime #{recommendation.createdAt}
           | #{recommendation.authorInfo.name}

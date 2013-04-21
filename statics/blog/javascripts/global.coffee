@@ -4,6 +4,9 @@ jQuery ($) ->
   _ = window._
   async = window.async
 
+  addBaiduTongji = () ->
+    $.getScript 'http://hm.baidu.com/h.js?d5f80b6cac3e277637145b68db92e2d0'
+
   addModifyBtn = () ->
     $('.article').each () ->
       obj = $ @
@@ -64,6 +67,8 @@ jQuery ($) ->
         type : 'like'
         id : id
       $.post '/statistics', data
+
+    addBaiduTongji()
 
   window.TIME_LINE.timeEnd 'all', 'html'
   setTimeout () ->
