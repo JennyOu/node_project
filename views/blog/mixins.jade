@@ -1,6 +1,8 @@
+
+
 mixin article(data)
   - fileImporter.importCss(['/statics/blog/stylesheets/article.styl', '/statics/common/stylesheets/monokai.styl']);
-  .article(data-id='#{data._id}')
+  .article(data-id='#{data._id}', title='#{data.title}')
     - var authorInfo = data.authorInfo;
     .author #{authorInfo.name}
       span.createTime #{data.createdAt}
@@ -14,11 +16,28 @@ mixin article(data)
       a.title(href='/article/#{data._id}', target='_blank') #{data.title}
 
     .content !{data.content}
-      if data.readMore
+      if data.ellipsis
         p.ellipsis ............（省略
           span #{data.ellipsis}
           | 字）
     if data.readMore
       .behaviorBtns
-        a.readmore.btn(href='/article/#{data._id}',  target='_blank') 更多内容...
+        a.readMore.btn(href='/article/#{data._id}',  target='_blank') 更多内容...
         a.like.btn(href='javascript:;') 喜 欢
+
+mixin question(data)
+  - fileImporter.importCss(['/statics/blog/stylesheets/question.styl', '/statics/common/stylesheets/monokai.styl']);
+  .question(data-id='#{data._id}', title='#{data.title}')
+    - var authorInfo = data.authorInfo;
+    .author #{authorInfo.name}的提问：
+      a.title(href='/question/#{data._id}', target='_blank') #{data.title}
+      span.createTime #{data.createdAt}
+      img(src='#{authorInfo.profilePic}')
+    .content !{data.content}
+      if data.ellipsis
+        p.ellipsis ............（省略
+          span #{data.ellipsis}
+          | 字）
+    if data.readMore
+      .behaviorBtns
+        a.readMore.btn(href='/question/#{data._id}', target='_blank') 查看问题

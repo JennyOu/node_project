@@ -1,3 +1,12 @@
+box-shadow(args...)
+  -webkit-box-shadow args
+  -moz-box-shadow args
+  box-shadow args
+
+border-radius(args...)
+  -webkit-border-radius args
+  -moz-border-radius args
+  border-radius radius
 
 joinArgs(args)
   str = ''
@@ -5,6 +14,12 @@ joinArgs(args)
     str += ', ' if i
     str += arg
   unquote(str)
+
+inlineBlock()
+  display inline-block
+  *display inline
+  *zoom inline
+
 
 vicansoGradient(start = #2c2c2c, end = #111)
   background-image -webkit-gradient(linear, left top, left bottom, color-stop(0, start), color-stop(1, end))
@@ -21,23 +36,13 @@ vicansoInsetBoxShadow(offset1 = 10px, color1 = rgba(255,255,255,0.20), args...)
   else
     offset2 = args[0]
     color2 = args[1]
-  -webkit-box-shadow inset 0px 0px offset1 color1, inset 0px offset2 0px color2
-  -moz-box-shadow inset 0px 0px offset1 color1, inset 0px offset2 0px color2
   box-shadow inset 0px 0px offset1 color1, inset 0px offset2 0px color2
 
-vicansoOriginalBoxShadow(args...)
-  -webkit-box-shadow joinArgs(args)
-  -moz-box-shadow joinArgs(args)
-  box-shadow joinArgs(args)
 
 vicansoBoxShadow(offset1 = 10px, color1 = rgba(255,255,255,0.20))
-  -webkit-box-shadow 0px 0px 0px offset1 color1
-  -moz-box-shadow 0px 0px 0px offset1 color1
   box-shadow 0px 0px 0px offset1 color1
 
 vicansoBorderRadius(radius = 3px)
-  -webkit-border-radius radius
-  -moz-border-radius radius
   border-radius radius
 
 

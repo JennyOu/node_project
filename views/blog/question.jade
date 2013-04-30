@@ -1,0 +1,24 @@
+include ./mixins
+
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importJs(['/statics/common/codemirror/codemirror.min.js', '/statics/common/codemirror/javascript.min.js', '/statics/common/javascripts/utils/markdown.min.js', '/statics/common/javascripts/utils/highlight.min.js']);
+  - fileImporter.importCss(['/statics/common/codemirror/codemirror.css', '/statics/common/codemirror/monokai.css', '/statics/common/stylesheets/monokai.styl']);
+  - fileImporter.importCss(['/statics/blog/stylesheets/questionitem.styl']);
+  - fileImporter.importJs('/statics/blog/javascripts/question.coffee')
+  #contentContainer
+    #slideBar
+      include ./about
+      include ./recommendations
+      include ./utils
+    #leftContainer
+      - var question = viewData.question;
+      if question
+        .questionContainer
+          mixin question(question)
+      .replyContainer
+        .author
+          
+        .replyContent
+

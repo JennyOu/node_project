@@ -17,8 +17,7 @@ highLight = (str) ->
       "<span class='lineNo'>#{i + 1}</span>#{code}"
     ).join '\n'
 
-
-  str = str.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&')
+  str = _.unescape(str).replace(/&#39;/g, "'").replace(/<script([\s\S]*?)<\/script>/g, '')
   re = /<pre><code>([\s\S]*?)<\/code><\/pre>/g
   results = str.match re
   if results
@@ -49,7 +48,7 @@ pageContentHandler =
         arr = doc.content.split '\n'
         if arr.length > 15
           arr.length = 15
-          doc.readMore = true
+        doc.readMore = true
         ellipsisContent = arr.join '\n'
 
         doc.ellipsis = doc.content.length - ellipsisContent.length
@@ -60,7 +59,7 @@ pageContentHandler =
         doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
       viewData.recommendations = results[0]
       cbf null, {
-        title : 'javascript的淡望'
+        title : 'Keep Coding, Cuttle Fish!'
         viewData : viewData
       }
   article : (req, res, cbf) ->
@@ -128,12 +127,12 @@ pageContentHandler =
         blogDbClient.findById 'articles', req.params.id, (err, doc) ->
           viewData.doc = doc
           cbf err, {
-            title : '追逐javascript的灵魂精粹'
+            title : 'Keep Coding, Cuttle Fish!'
             viewData : viewData
           }
       else
         cbf null, {
-          title : '追逐javascript的灵魂精粹'
+          title : 'Keep Coding, Cuttle Fish!'
           viewData : viewData
         }
   userInfo : (req, res, cbf) ->
@@ -173,6 +172,81 @@ pageContentHandler =
       cbf null, {
         code : -1
         msg : 'fail'
+      }
+  ask : (req, res, cbf) ->
+    if req.method == 'GET'
+      viewData =
+        header : webConfig.getHeader req.url
+        createdAt : new Date().toFormat 'YYYY.MM.DD'
+      cbf null, {
+        title : 'Keep Coding, Question!'
+        viewData : viewData
+      }
+    else if req.method == 'POST'
+      data = req.body
+      userInfo = req.session.userInfo
+      if !userInfo
+        cbf null, {
+          code : -1
+          msg : '未登录'
+        }
+        return 
+      data.createdAt = new Date()
+      data.authorInfo = userInfo
+      blogDbClient.save 'questions', data, (err) ->
+        if err
+          cbf null, {
+            code : -1
+            msg : 'success fail'
+          }
+        else
+          cbf null, {
+            code : 0
+            msg : 'success'
+          }
+  questions : (req, res, cbf) ->
+    viewData =
+      header : webConfig.getHeader req.url
+    blogDbClient.find 'questions', {}, (err, docs) ->
+      if err
+        cbf err
+        return
+      questions = _.map docs, (doc) ->
+        arr = doc.content.split '\n'
+        if arr.length > 5
+          arr.length = 5
+        doc.readMore = true
+        ellipsisContent = arr.join '\n'
+
+        doc.ellipsis = doc.content.length - ellipsisContent.length
+        doc.content = highLight markdown.toHTML ellipsisContent
+
+        doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
+        doc
+      viewData.questions = questions
+      console.dir viewData
+      cbf null, {
+        title : 'Keep Coding, Cuttle Fish!'
+        viewData : viewData
+      }
+  question : (req, res, cbf) ->
+    id = req.params.id
+    record = 
+      type : 'view'
+      id : id
+    statistics.record record
+    blogDbClient.findById 'questions', id, (err, doc) ->
+      if err
+        cbf err
+        return
+      doc.content = highLight markdown.toHTML doc.content
+      doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
+      viewData =
+        header : webConfig.getHeader req.url
+        question : doc
+      cbf null, {
+        title : doc.title
+        viewData : viewData
       }
   mergeAjax : (req, res, cbf) ->
     res.send [

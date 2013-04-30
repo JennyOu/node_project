@@ -1,0 +1,17 @@
+include ./mixins
+
+extends ./layout
+block bodyContainer
+  include ./header
+  - fileImporter.importCss(['/statics/blog/stylesheets/questions.styl']);
+  - fileImporter.importJs('/statics/blog/javascripts/questions.coffee')
+  #contentContainer
+    #slideBar
+      include ./about
+      include ./recommendations
+      include ./utils
+    - var questions = viewData.questions;
+    if questions
+      .questions
+        each question in questions
+          mixin question(question)

@@ -1,0 +1,30 @@
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+
+slideBarWidth = 400px
+#contentContainer
+  width CONTENT_WIDTH
+  margin HEADER_HEIGHT + SPACING_VALUE auto auto
+
+#leftContainer
+  margin-right slideBarWidth + 20
+  .questionContainer
+    background-color white
+    box-shadow 0 1px 3px rgba(34, 25, 25, 0.4)
+    margin-bottom 15px
+    .question .content pre code
+      max-height 9999px
+  .replyContainer
+    background-color white
+    box-shadow 0 1px 3px rgba(34, 25, 25, 0.4)
+    margin-bottom 15px
+    overflow hidden
+    .replyContent
+      textarea
+        width 100%
+        height 60px
+
+#slideBar
+  float right
+  width slideBarWidth
+

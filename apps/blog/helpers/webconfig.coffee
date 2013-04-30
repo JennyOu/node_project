@@ -22,6 +22,10 @@ webConfig =
         url : '/tag/others'
         title : 'others'
       }
+      {
+        url : '/question'
+        title : '提问'
+      }
     ]
     
     urlList = _.pluck navData, 'url'

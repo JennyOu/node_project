@@ -40,7 +40,7 @@ jQuery ($) ->
       createConfig = 
         tip : '请输入内容：'
         itemClass : 'inputContent'
-        height : 600
+        height : 1800
       appendToEditItem createConfig, articleContentObj, data.content
 
   appendToEditItem = (createConfig, articleContentObj, content) ->
@@ -80,7 +80,7 @@ jQuery ($) ->
       else createConfig = 
         tip : '请输入内容：'
         itemClass : 'inputContent'
-        height : 600
+        height : 1800
     articleContentObj = $ '.articleContent'
     if createConfig
       editor = appendToEditItem createConfig, articleContentObj

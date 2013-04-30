@@ -13,8 +13,7 @@ jQuery ($) ->
       id = obj.attr 'data-id'
       obj.find('.behaviorBtns').append "<a class='btn', href='/savearticle/#{id}?cache=false', target='_blank'>修改</a>"
   postUserInfo = (userInfo) ->
-    $.post('/userinfo?cache=false', userInfo).success () ->
-      console.dir arguments
+    $.post '/userinfo?cache=false', userInfo
 
   appendWeiboLogin = (id, cbf) ->
     async.waterfall [
@@ -46,10 +45,12 @@ jQuery ($) ->
       appendWeiboLogin 'weiboLogin', (err, userInfo) ->
         if !err && userInfo
           postUserInfo userInfo
+          $(document).trigger 'login', userInfo
     else
       $('#weiboLogin').html "<div class='userInfoContainer'><a href='#{userInfo.profileUrl}'>#{userInfo.name}</a>(已登录)</div>"
       if userInfo.level == 9
         addModifyBtn()
+      $(document).trigger 'login', userInfo
   # init event
   do () ->
     $('#goToTop').click () ->
@@ -68,7 +69,7 @@ jQuery ($) ->
         id : id
       $.post '/statistics', data
 
-    addBaiduTongji()
+    # addBaiduTongji()
 
   window.TIME_LINE.timeEnd 'all', 'html'
   setTimeout () ->

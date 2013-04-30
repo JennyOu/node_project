@@ -37,6 +37,31 @@ routeInfos = [
     handler : pageContentHandler.saveArticle
   }
   {
+    route : '/ask'
+    jadeView : 'blog/ask'
+    staticsHost : staticsHost
+    middleware : [sessionParser]
+    handler : pageContentHandler.ask
+  }
+  {
+    route : '/ask'
+    type : 'post'
+    middleware : [sessionParser]
+    handler : pageContentHandler.ask
+  }
+  {
+    route : '/questions'
+    jadeView : 'blog/questions'
+    staticsHost : staticsHost
+    handler : pageContentHandler.questions
+  }
+  {
+    route : '/question/:id'
+    jadeView : 'blog/question'
+    staticsHost : staticsHost
+    handler : pageContentHandler.question
+  }
+  {
     type : 'post'
     route : '/statistics'
     handler : pageContentHandler.statistics

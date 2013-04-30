@@ -1,6 +1,6 @@
 @import './common'
 @import '../../common/stylesheets/mixins/vicanso'
-.article
+.question, .replyContainer
   background-color #fff
   overflow hidden
   vicansoBoxShadow 1px, rgba(0,0,0,0.10)
@@ -8,7 +8,6 @@
   .author
     color #999
     text-shadow 0px 1px 0px #fff
-    padding 5px
     margin-bottom 20px
     background-color #fafafa
     border-bottom 1px dashed #ddd
@@ -29,14 +28,11 @@
       background-color #e5e5e5
       padding 5px 8px
       line-height 12px
-      top 10px
+      top 5px
       right 10px
       vicansoBorderRadius 5px
       box-shadow 'inset 0px 1px 0px rgba(0,0,0,0.10)', 'inset 0px -1px 0px #fff', 'inset 0px 2px 2px rgba(100,100,100,0.10)'
-    .fullscreen
-      position absolute
-      top 10px
-      right 90px
+.question
   .info
     .tags
       float right
@@ -53,11 +49,11 @@
       line-height 32px
       padding-left 20px
   .content
-  	p, ul
-    	margin 15px 20px
+    p, ul
+      margin 15px 20px
     ul li
-    	list-style-position inside
-    	list-style-type square
+      list-style-position inside
+      list-style-type square
     pre code
       margin 20px 0px
       max-height 300px
@@ -69,3 +65,7 @@
       margin-right 20px
       &.like
         width 50px
+.replyContainer
+  .author
+    margin-bottom 0
+    border-bottom none

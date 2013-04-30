@@ -1,0 +1,36 @@
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+#contentContainer
+  width CONTENT_WIDTH
+  margin HEADER_HEIGHT + SPACING_VALUE auto auto
+  overflow hidden
+  .editor, .preview
+    float left
+    width 50%
+    line-height 24px
+  .editor
+    .submit
+      margin-left 10px
+      height 20px
+      width 50px
+    .tip
+      margin-right 10p
+    .title input
+      width (CONTENT_WIDTH / 2) - 130
+      height 24px
+    .tags
+      margin 10px 0
+      .btn
+        height 15px
+        width 60px
+        line-height @height
+        margin-right 20px
+      .selected
+        color red
+    .content
+      width 100%
+      min-height 600px
+
+  .preview
+    .article
+      margin-left 20px
