@@ -4,8 +4,8 @@ jQuery ($) ->
   _ = window._
   async = window.async
 
-  addBaiduTongji = () ->
-    $.getScript 'http://hm.baidu.com/h.js?d5f80b6cac3e277637145b68db92e2d0'
+  hideBaiduIcon = () ->
+    $('a[href^="http://tongji.baidu.com"]').hide()
 
   addModifyBtn = () ->
     $('.article').each () ->
@@ -69,7 +69,7 @@ jQuery ($) ->
         id : id
       $.post '/statistics', data
 
-    # addBaiduTongji()
+    hideBaiduIcon()
 
   window.TIME_LINE.timeEnd 'all', 'html'
   setTimeout () ->

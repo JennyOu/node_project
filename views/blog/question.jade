@@ -17,8 +17,16 @@ block bodyContainer
       if question
         .questionContainer
           mixin question(question)
+        - var comments = question.comments;
+        if comments
+          .comments
+            h3.title Comments(共#{comments.length}条)
+            each comment in comments
+              mixin comment(comment)
+
       .replyContainer
         .author
-          
         .replyContent
+        .preview
+          .content
 

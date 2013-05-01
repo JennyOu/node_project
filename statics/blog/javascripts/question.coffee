@@ -1,11 +1,28 @@
 jQuery ($) ->
 
-
+  getData = () ->
+    codeMirrorEditor =  $('#leftContainer .replyContainer .replyContent textarea').data 'codeMirrorEditor'
+    codeMirrorEditor.getValue()
+  prevView = () ->
+    $('#leftContainer .preview .content').html markdown.toHTML getData()
   do () ->
     $(document).on 'login', (e, userInfo) ->
-      questionTitle = $('#leftContainer .questionContainer .question').attr 'title'
+      questionObj = $ '#leftContainer .questionContainer .question'
+      questionTitle = questionObj.attr 'title'
       author = $ '#leftContainer .replyContainer .author'
       author.html "#{userInfo.name}回复(#{questionTitle})：<a class='reply' href='javascript:;'>确定回复</a><img src='#{userInfo.profilePic}' />"
+      author.on 'click', '.reply', () ->
+        obj = $ @
+        $.ajax({
+          url : "/question/#{questionObj.attr('data-id')}"
+          data : 
+            content : getData()
+          type : 'post'
+        }).success (data) ->
+          if data.code == 0
+            obj.text '回复成功！'
+          else
+            obj.text '回复失败！'
       editor = $('<textarea />').appendTo $ '#leftContainer .replyContainer .replyContent'
       codeMirrorEditor = CodeMirror.fromTextArea editor.get(0), {
         lineNumbers: true
@@ -15,14 +32,5 @@ jQuery ($) ->
       }
       editor.data('codeMirrorEditor', codeMirrorEditor).next('.CodeMirror').find('.CodeMirror-scroll').height 60
 
+      setInterval prevView, 3000
 
-
-      # <div class="author">谢树洲Tree的提问：<a href="/question/517a75e70ff5197d02000001" target="_blank" class="title">怎么测试node</a><span class="createTime">2013.04.26</span><img src="http://tp1.sinaimg.cn/2398226332/30/5660016074/1"></div>
-
-
-# id: "sinaweibo_2398226332"
-# level: 9
-# location: "广东 广州"
-# name: "谢树洲Tree"
-# profilePic: "http://tp1.sinaimg.cn/2398226332/30/5660016074/1"
-# profileUrl: "http://weibo.com/u/2398226332"

@@ -1,6 +1,6 @@
 @import './common'
 @import '../../common/stylesheets/mixins/vicanso'
-.question, .replyContainer
+.question, .replyContainer, .comments
   background-color #fff
   overflow hidden
   vicansoBoxShadow 1px, rgba(0,0,0,0.10)
@@ -32,7 +32,6 @@
       right 10px
       vicansoBorderRadius 5px
       box-shadow 'inset 0px 1px 0px rgba(0,0,0,0.10)', 'inset 0px -1px 0px #fff', 'inset 0px 2px 2px rgba(100,100,100,0.10)'
-.question
   .info
     .tags
       float right
@@ -65,6 +64,14 @@
       margin-right 20px
       &.like
         width 50px
+.comments
+  margin-bottom 20px
+  .title
+    height 40px
+    line-height @height
+    padding-left 20px
+    vicansoGradient #0054a6, #004385
+    color white
 .replyContainer
   .author
     margin-bottom 0

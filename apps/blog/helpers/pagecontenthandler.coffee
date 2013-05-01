@@ -231,23 +231,53 @@ pageContentHandler =
       }
   question : (req, res, cbf) ->
     id = req.params.id
-    record = 
-      type : 'view'
-      id : id
-    statistics.record record
-    blogDbClient.findById 'questions', id, (err, doc) ->
-      if err
-        cbf err
-        return
-      doc.content = highLight markdown.toHTML doc.content
-      doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
-      viewData =
-        header : webConfig.getHeader req.url
-        question : doc
-      cbf null, {
-        title : doc.title
-        viewData : viewData
-      }
+    if req.method == 'GET'
+      record = 
+        type : 'view'
+        id : id
+      statistics.record record
+      blogDbClient.findById 'questions', id, (err, doc) ->
+        if err
+          cbf err
+          return
+        doc.content = highLight markdown.toHTML doc.content
+        doc.createdAt = new Date(doc.createdAt).toFormat 'YYYY.MM.DD'
+        _.each doc.comments, (comment, i) ->
+          comment.content = highLight markdown.toHTML comment.content
+          comment.createdAt = new Date(comment.createdAt).toFormat 'YYYY.MM.DD'
+
+        viewData =
+          header : webConfig.getHeader req.url
+          question : doc
+        cbf null, {
+          title : doc.title
+          viewData : viewData
+        }
+    else
+      data = req.body
+      userInfo = req.session.userInfo
+      if !userInfo || !data
+        cbf null, {
+          code : -1
+          msg : 'fail'
+        }
+      else
+        data.userInfo = userInfo
+        data.createdAt = new Date()
+        op = 
+          '$push' : 
+            comments : data
+        blogDbClient.update 'questions', {_id : id}, op, (err) ->
+          if err
+            cbf null, {
+              code : -1
+              msg : 'fail'
+            }
+          else
+            cbf null, {
+              code : 0
+              msg : 'success'
+            }
   mergeAjax : (req, res, cbf) ->
     res.send [
       {

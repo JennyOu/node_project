@@ -12,7 +12,6 @@ block bodyContainer
       .title
         span.tip 标题：
         input(type='text', placeholder='请输入你的技术问题？')
-        a.btn.submit(href='javascript:;') 保存
       .tags
         span.tip 分类：
         a.btn(href='javascript:;') node
@@ -20,7 +19,10 @@ block bodyContainer
         a.btn(href='javascript:;') jQuery
         a.btn(href='javascript:;') node
         a.btn(href='javascript:;') others
-      h3 请详细描述你的问题，最好带上代码（请使用markdown编写）：
+      .ctrlBtn
+        a.btn.submit(href='javascript:;') 保存
+        a.btn.example(href='javascript:;') 示例(markdown)
+      h3 请详细描述你的问题，最好带上代码（请使用markdown编写，右侧为预览效果图，定时刷新）：
       textarea.content
     .preview
       .article

@@ -62,6 +62,12 @@ routeInfos = [
     handler : pageContentHandler.question
   }
   {
+    route : '/question/:id'
+    type : 'post'
+    middleware : [sessionParser]
+    handler : pageContentHandler.question
+  }
+  {
     type : 'post'
     route : '/statistics'
     handler : pageContentHandler.statistics
