@@ -1,5 +1,6 @@
 blogDbClient = require('jtmongodb').getClient 'blog'
-
+_ = require 'underscore'
+async = require 'async'
 records = []
 recordTimer = null
 
@@ -17,4 +18,23 @@ statistics =
         records = []
         recordTimer = null
       , 10 * 1000
+  set : (type, ids) ->
+    if !_.isArray ids
+      ids = [ids]
+    _.delay () ->
+      async.eachLimit ids, 5, (id, cbf) ->
+        query = 
+          type : type
+          id : id.toString()
+        async.waterfall [
+          (cbf) ->
+            blogDbClient.count 'statistics', query, cbf
+          (count, cbf) ->
+            updateData = {}
+            updateData[type] = count
+            blogDbClient.findByIdAndUpdate 'articles', id, updateData, cbf
+        ], (err) ->
+          cbf null
+    , 50
+
 module.exports = statistics

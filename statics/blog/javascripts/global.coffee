@@ -4,6 +4,13 @@ jQuery ($) ->
   _ = window._
   async = window.async
 
+  archorHandle = () ->
+    $(document).on 'click', 'a[href^="http"]', () ->
+      @target = '_blank'
+      data = 
+        url : @href
+        type : 'outsideChain'
+      $.post '/statistics', data
   hideBaiduIcon = () ->
     $('a[href^="http://tongji.baidu.com"]').hide()
 
@@ -40,18 +47,7 @@ jQuery ($) ->
         }
     ], cbf
 
-  $.get('/userinfo?test=1&cache=false').success (userInfo) ->
-    if !userInfo.id
-      appendWeiboLogin 'weiboLogin', (err, userInfo) ->
-        if !err && userInfo
-          postUserInfo userInfo
-          $(document).trigger 'login', userInfo
-    else
-      $('#weiboLogin').html "<div class='userInfoContainer'><a href='#{userInfo.profileUrl}'>#{userInfo.name}</a>(已登录)</div>"
-      if userInfo.level == 9
-        addModifyBtn()
-      $(document).trigger 'login', userInfo
-  # init event
+
   do () ->
     $('#goToTop').click () ->
       $('html, body').animate {
@@ -69,7 +65,21 @@ jQuery ($) ->
         id : id
       $.post '/statistics', data
 
+    $.get('/userinfo?test=1&cache=false').success (userInfo) ->
+      if !userInfo.id
+        appendWeiboLogin 'weiboLogin', (err, userInfo) ->
+          if !err && userInfo
+            postUserInfo userInfo
+            $(document).trigger 'login', userInfo
+      else
+        $('#weiboLogin').html "<div class='userInfoContainer'><a href='#{userInfo.profileUrl}'>#{userInfo.name}</a>(已登录)</div>"
+        if userInfo.level == 9
+          addModifyBtn()
+        $(document).trigger 'login', userInfo
+
+
     hideBaiduIcon()
+    archorHandle()
 
   window.TIME_LINE.timeEnd 'all', 'html'
   setTimeout () ->

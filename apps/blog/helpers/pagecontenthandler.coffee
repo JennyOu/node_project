@@ -8,6 +8,7 @@ async = require 'async'
 hljs = require 'highlight.js'
 fs = require 'fs'
 blogDbClient = require('jtmongodb').getClient 'blog'
+varnishHandler = require './varnishhandler'
 statistics = require './statistics'
 
 highLight = (str) ->
@@ -62,6 +63,9 @@ pageContentHandler =
         title : 'Keep Coding, Cuttle Fish!'
         viewData : viewData
       }
+      ids =  _.pluck viewData.articles, '_id'
+      statistics.set 'view', ids
+      statistics.set 'like', ids
   article : (req, res, cbf) ->
     id = req.params.id
     record = 
@@ -115,6 +119,7 @@ pageContentHandler =
                 code : 0
                 msg : 'save artcile success'
             cbf null, result
+        varnishHandler.refresh 'http://localhost/'
       else
         cbf null, {
           code : -1
@@ -204,6 +209,7 @@ pageContentHandler =
             code : 0
             msg : 'success'
           }
+          varnishHandler.refresh 'http://localhost/questions'
   questions : (req, res, cbf) ->
     viewData =
       header : webConfig.getHeader req.url

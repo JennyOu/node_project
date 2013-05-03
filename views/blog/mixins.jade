@@ -5,8 +5,11 @@ mixin article(data)
   .article(data-id='#{data._id}', title='#{data.title}')
     - var authorInfo = data.authorInfo;
     .author #{authorInfo.name}
-      span.createTime #{data.createdAt}
       img(src='#{authorInfo.profilePic}')
+      span.createTime #{data.createdAt}
+      .statisticsInfo
+        .like(title='喜欢') 喜欢(#{data.like || 0})
+        .view(title='浏览') 浏览(#{data.view || 0})
     .info
       - var tags = data.tags
       if tags && tags.length > 0
@@ -14,7 +17,6 @@ mixin article(data)
           each tag in tags
             a.tag(href='/tag/#{tag}') #{tag}
       a.title(href='/article/#{data._id}', target='_blank') #{data.title}
-
     .content !{data.content}
       if data.ellipsis
         p.ellipsis ............（省略
