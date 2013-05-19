@@ -1,0 +1,123 @@
+@import '../../common/stylesheets/mixins/vicanso'
+.jtSelect
+  $jtSelectHeight = 24px
+  $jtSelectWidth = 150px
+  $border = 1px solid #e0e0e0
+  border $border
+  width $jtSelectWidth
+  height $jtSelectHeight
+  line-height @height
+  position relative
+  z-index 9
+  .userInput
+    width $jtSelectWidth - $jtSelectHeight
+    text-indent 0.5em
+    height 100%
+    border none
+  .showSelect
+    display block
+    float right
+  .selectList
+    position absolute
+    left 0
+    width $jtSelectWidth
+    top $jtSelectHeight
+    border $border
+    background-color #fff
+    max-height 300px
+    overflow auto
+    display none
+    li
+      cursor pointer
+      padding 3px 10px
+      &:hover
+        color white
+        background-color #800000
+
+.jtDialog
+  box-shadow 0 0 0 1px rgba(0,0,0,0.1)
+  .title
+    height 30px
+    line-height @height
+    padding-left 10px
+    font-weight 900
+    margin 3px
+    .close
+      display block
+      height 100%
+      float right
+      margin-right 2px
+  .btns
+    text-align right
+    margin 10px 5px 5px 0
+    .btn
+      margin-left 10px
+.jtAlertDlg
+  width 400px
+  position fixed
+  left 50%
+  margin-left -200px
+  top 100px
+  background-color #fff
+  .content
+    padding 10px
+    padding-bottom 0
+
+.jtDatePicker
+  $jtDatePickerBorderColor = #e0e0e0
+  position absolute
+  background-color #fff
+  border 1px solid $jtDatePickerBorderColor
+  border 1px solid rgba(0, 0, 0, 0.2)
+  padding 4px
+  box-shadow 0 5px 10px rgba(0, 0, 0, 0.2)
+  user-select none
+  display none
+  .arrowContainer
+    position absolute
+    left 10px
+    top -20px
+    height 0
+    width 0
+    border 10px solid #fff
+    border-color transparent transparent #fff transparent
+  .arrowContainerBottom
+    border-width 12px
+    top -24px
+    left 8px
+    border-bottom-color $jtDatePickerBorderColor
+  table
+    width 100%
+    th, td
+      text-align center
+      width 20px
+      height 20px
+      padding 5px
+      &.currentDay
+        color white
+        background-color #004385
+        vicansoGradient #0054a6, #004385
+      &.active
+        color white
+        background-color #800000
+        vicansoGradient #800000, #a00000
+    th.dateView
+      width 140px
+  .prev, .next
+    font-size 21px  
+  .day, .prev, .next, .dateView, .month
+    &:hover
+      cursor pointer
+      border-radius 3px
+      background-color #eee
+  thead th
+    font-weight 900
+  .monthsContainer
+    display none
+    .month
+      display block
+      float left
+      text-align center
+      width 50px
+      height 50px
+      line-height @height

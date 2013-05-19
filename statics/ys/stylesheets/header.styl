@@ -1,0 +1,75 @@
+@import './common'
+@import '../../common/stylesheets/mixins/vicanso'
+
+#header
+  background-color #004385
+  vicansoGradient #0054a6, #004385
+  left 0
+  right 0
+  top 0
+  position fixed
+  z-index 99
+  #weiboLogin
+    float right
+    a
+      line-height 24px
+      color white
+    // .userInfoContainer
+
+  .navbar
+    $paddingValue = 30px
+    height $HEADER_HEIGHT
+    line-height $HEADER_HEIGHT
+    padding 0 $paddingValue
+    width $CONTENT_WIDTH - 2 * $paddingValue
+    margin auto
+    .navItem
+      float left
+      height 100%
+      &.active
+        a
+          background-color #003363
+      a
+        display block
+        color white
+        text-align center
+        width 100px
+        .icon
+          padding-right 15px
+
+    .hidden
+      display none
+
+#logoutBtn
+  position fixed
+  display none
+  width 15px
+  right 10px
+  bottom 10px
+
+#loginBtn
+  display none
+  position fixed
+  width 300px
+  height 40px
+  font-size 24px
+  line-height @height
+  left 50%
+  top 50%
+  margin-left -(@width / 2)
+  margin-top -(@height / 2)
+#loadingProgressTip
+  position fixed
+  left 0
+  bottom 0
+  height 30px
+  line-height @height
+  width 200px
+  text-align center
+  color #800000
+.addUserContainer, .loginContainer
+  input
+    height 30px
+    line-height @height
+    width 100%
+    margin-bottom 10px

@@ -161,7 +161,7 @@ initMongoDb = (dbConfigs) ->
     valiate : true
     timeOut : 0
     ttl : 0
-    cacheClient : jtRedis.getClient()
+    # cacheClient : jtRedis.getClient()
     mongodb : dbConfigs
     logger : require('jtlogger').getLogger 'MONGODB'
   }

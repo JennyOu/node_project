@@ -1,0 +1,40 @@
+.itemTable
+  $border = 1px solid #c0c0c0
+  .theadContainer
+    padding-right 17px
+    border $border
+    border-bottom none
+  .tbodyContainer
+    height 200px
+    border $border
+    border-top none
+    overflow-y scroll
+  table
+    table-layout fixed
+    border-collapse collapse
+    width 100%
+    empty-cells show
+    td, th
+      height 35px
+      line-height @height
+      text-align center
+    th
+      border-right $border
+    td
+      border $border
+      &:first-child
+        border-left none
+    td input
+      background-color transparent
+      &[type='text']
+        text-align center
+        width 100%
+        height 100%
+        border-color rgba(0, 0, 0, 0)
+        outline none
+        &:focus
+          border-color rgba(160, 10, 10, 0.8)
+    .odd
+      background-color #f7f7f7
+    .even
+      background-color #eff2ff

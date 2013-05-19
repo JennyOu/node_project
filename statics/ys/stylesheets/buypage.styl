@@ -1,0 +1,42 @@
+@import '../../common/stylesheets/mixins/vicanso'
+@import './common'
+
+#contentContainer
+  width $CONTENT_WIDTH
+  margin 50px auto
+  min-height 800px
+#buyPageContainer
+  display none  
+  .buyInfo
+    margin-bottom 10px
+    height 30px
+    line-height @height
+    .item
+      display inline-block
+      margin-right 20px
+      *display inline
+      *zoom 1
+    .buyOrderNo
+      width 215px
+      border-bottom 1px solid black
+      .iReload
+        float left
+        cursor pointer
+        margin-top 3px
+        border 1px solid #e0e0e0
+        background-color #f0f0f0
+        &:hover
+          background-color #fff
+    .print, .save, .saveToTemp
+      padding 2px 30px
+      cursor pointer
+  .selectItemsContainer
+    display none
+    width 600px
+    position fixed
+    top 80px
+    left 50%
+    margin-left -300px
+    background-color #fff
+    .tbodyContainer 
+      border none

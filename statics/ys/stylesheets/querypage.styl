@@ -1,0 +1,42 @@
+@import '../../common/stylesheets/mixins/vicanso'
+@import './common'
+
+#contentContainer
+  width $CONTENT_WIDTH
+  min-height 800px
+  margin 50px auto 
+#queryPageContainer
+  display none
+  .info
+    $infoHeight = 30px
+    height $infoHeight
+    line-height @height
+    margin-bottom 20px
+    .item
+      margin-right 20px
+      display inline-block
+      *display inline
+      *zoom inline
+    .datePicker
+      input
+        width 80px
+        text-align center
+        height $infoHeight - 2
+      span
+        padding 0 10px
+    .typeSelect
+      span 
+        padding 0 20px 0 5px
+    .search
+      line-height 20px
+      margin-left 10px
+  .tableView
+    .op
+      width 60px
+    .priceTotal, .createdAt, .type, .oper
+      width 100px
+    .profitTotal
+      width 80px
+    .edit
+      display block
+      width 100%

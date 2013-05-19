@@ -1,0 +1,30 @@
+#printContainer
+  display none
+@media print
+  #printContainer
+    display block
+    width 700px
+    font-size 12pt
+    .info
+      margin-bottom 10px
+      .item
+        margin-right 20px
+        display inline-block
+        *display inline
+        *zoom 1
+    .printTable
+      table-layout fixed
+      border-collapse collapse
+      width 100%
+      empty-cells show
+      th, td
+        border 1px solid black
+        text-align center
+      .size, .auxiliaryCount
+        width 80px
+      .count
+        width 40px
+      .price
+        width 50px
+      .priceTotal
+        width 80px

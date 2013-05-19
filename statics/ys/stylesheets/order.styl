@@ -1,0 +1,46 @@
+.orderItemTable
+  .tbodyContainer
+    height 300px
+  .op
+    width 40px
+  .count, .price, .size
+    width 80px
+  .auxiliaryCount, .priceTotal, .barcode
+    width 120px
+  .userInupt
+    font-weight 900
+  .warning
+    color #b94a48
+  .remove
+    display block
+    height 100%
+    width 100%
+  .othersInfo
+    margin-top 10px
+    $infoHeight = 30px
+    height $infoHeight
+    line-height @height
+    .priceTotal
+      width auto
+      float right
+      span
+        text-decoration underline
+        color #800000
+      .confirmTotalPrice
+        text-align center
+        height $infoHeight
+        line-height @height
+        margin-left 10px
+    .remark
+      width auto
+      float right
+      margin-right 50px
+      input
+        text-align center
+        height $infoHeight
+        line-height @height
+    .showSelectList
+      height $infoHeight
+      line-height @height
+      width 220px
+      text-indent 0.5em
