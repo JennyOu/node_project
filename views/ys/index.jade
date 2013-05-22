@@ -1,4 +1,7 @@
-extends ./layout
+extends ./baselayout
 block bodyContainer
   include ./header
+   - fileImporter.importCss(['/statics/ys/stylesheets/index.styl']);
   #contentContainer
+    include ./waterfall
+    include ./pagebuttonset

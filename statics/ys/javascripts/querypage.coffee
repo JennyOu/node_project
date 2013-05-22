@@ -63,6 +63,8 @@ QueryListView = YS.ItemListView.extend {
         item.payType ?= ''
         item.profitTotal ?= ''
         item.remark ?= ''
+        item.client ?= ''
+        item.inputPriceTotal ?= ''
       @model.reset data
     @
   initialize : ->

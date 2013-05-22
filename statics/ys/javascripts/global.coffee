@@ -41,20 +41,20 @@ GLOBAL = Backbone.View.extend {
           '<input type="password" class="pwd" placeholder="请输入密码" /><br />' +
           '<p class="errorText infoTip"></p>' +
         '</div>'
-        new JT.Alert {
-          title : '用户登录'
-          content : html
-          btns : 
-            '确定' : ($el) ->
-              name = $el.find('.name').val()
-              pwd = $el.find('.pwd').val()
-              cbf null, {
-                name : name
-                pwd : CryptoJS.SHA1(pwd).toString()
-              }
-            '取消' : ->
-              cbf null
-        }
+        new JT.View.Alert
+          model : new JT.Model.Dialog
+            title : '用户登录'
+            content : html
+            btns : 
+              '确定' : ($el) ->
+                name = $el.find('.name').val()
+                pwd = $el.find('.pwd').val()
+                cbf null, {
+                  name : name
+                  pwd : CryptoJS.SHA1(pwd).toString()
+                }
+              '取消' : ->
+                cbf null
       (data, cbf) ->
         if !data
           cbf null

@@ -13,7 +13,7 @@ jQuery ($) ->
 			name : '选项三'
 		}
 	]
-	new JT.View.Select {
+	jtSelect = new JT.View.Select {
 		el : $('#select').get 0
 		tips : '选择'
 		model : selectCollection
@@ -22,17 +22,25 @@ jQuery ($) ->
 	_.delay () ->
 		selectCollection.at(0).set 'name', '修改名字'
 		_.delay () ->
-			selectCollection.add {
-				key : 4
-				name : '测试4'
-			}
+			data = [
+				{
+					key : 4
+					name : '测试4'
+				}
+				{
+					key : 5
+					name : '测试5'
+				}
+			]
+			selectCollection.add data
+			selectCollection.val 5
+			selectCollection.destroy()
 		, 2000
 	, 2000
 
 	dialogModel = new JT.Model.Dialog {
 		title : '测试对话框'
 		content : '内容内容内容'
-		destroyOnClose : false
 	}
 	new JT.View.Dialog {
 		el : $('#dialog').get 0
@@ -40,6 +48,10 @@ jQuery ($) ->
 	}
 	_.delay () ->
 		dialogModel.set 'title', '标题修改'
+		dialogModel.set 'content', '内容修改'
+		dialogModel.set 'btns', {
+			'确定' : ->
+		}
 	, 2000
 
 	new JT.View.Alert {
@@ -75,6 +87,10 @@ jQuery ($) ->
 			title : '添加数据'
 			content : '添加数据添加数据添加数据添加数据'
 		}
+		accordionCollection.at(1).set 'active', true
+		accordionCollection.at(1).set 'title', '修改标题'
+		accordionCollection.at(1).set 'content', '修改内容'
+
 	, 2000
 
 	tabsCollection = new JT.Collection.Tabs [
@@ -101,4 +117,7 @@ jQuery ($) ->
 			title : '添加数据'
 			content : '添加数据添加数据添加数据添加数据'
 		}
+		tabsCollection.at(2).set 'active', true
+		tabsCollection.at(2).set 'title', '修改标题'
+		tabsCollection.at(2).set 'content', '修改内容'
 	, 2000

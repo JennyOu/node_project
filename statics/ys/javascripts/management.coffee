@@ -30,48 +30,50 @@ ManagementPage = Backbone.View.extend {
           '<input type="password" class="confirmPwd" placeholder="请确认输入密码" />' +
           '<p class="errorText infoTip"></p>' +
         '</div>'
-        new JT.Alert {
-          title : '创建用户'
-          content : html
-          btns : 
-            '创建' : ($el)->
-              name = $el.find('.name').val()
-              pwd = $el.find('.pwd').val()
-              confirmPwd = $el.find('.confirmPwd').val()
-              errMsg = []
-              if !name
-                errMsg.push '用户名为空！'
-              if !pwd
-                errMsg.push '密码为空！'
-              if pwd != confirmPwd
-                errMsg.push '两次输入的密码不相同！'
-              if errMsg.length
-                $el.find('.infoTip').text errMsg.join ''
-                false
-              else 
-                cbf null, {
-                  name : name
-                  pwd : CryptoJS.SHA1(pwd).toString()
-                }
-            '取消' : ->
-              cbf null
-        }
+        new JT.View.Alert 
+          model : new JT.Model.Dialog
+            title : '创建用户'
+            content : html
+            btns : 
+              '创建' : ($el)->
+                name = $el.find('.name').val()
+                pwd = $el.find('.pwd').val()
+                confirmPwd = $el.find('.confirmPwd').val()
+                errMsg = []
+                if !name
+                  errMsg.push '用户名为空！'
+                if !pwd
+                  errMsg.push '密码为空！'
+                if pwd != confirmPwd
+                  errMsg.push '两次输入的密码不相同！'
+                if errMsg.length
+                  $el.find('.infoTip').text errMsg.join ''
+                  false
+                else 
+                  cbf null, {
+                    name : name
+                    pwd : CryptoJS.SHA1(pwd).toString()
+                  }
+              '取消' : ->
+                cbf null, null
       (data, cbf) ->
         if !data
-          cbf null
+          cbf null, null
         else
           $.post('/adduser', data).success (data) ->
             cbf null, data
     ], (err, data) ->
       if err
         msg = err.msg || err.toString()
-      else
+      else if data
         msg = data.msg
-      new JT.Alert
-        title : '创建用户'
-        content : msg
-        btns : 
-          '确定' : ->
+      if msg
+        new JT.View.Alert
+          model : new JT.Model.Dialog
+            title : '创建用户'
+            content : msg
+            btns : 
+              '确定' : ->
 }
 
 jQuery ($) ->

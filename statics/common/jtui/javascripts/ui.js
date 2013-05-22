@@ -22,20 +22,61 @@
 
   JT.VERSION = '0.0.1';
 
-  JT.Model.Select = Backbone.Model.extend({});
+  JT.Model.Select = Backbone.Model.extend({
+    defaults: {
+      key: '',
+      value: ''
+    }
+  });
 
   JT.Collection.Select = Backbone.Collection.extend({
-    model: JT.Model.Select
+    model: JT.Model.Select,
+    /**
+     * val 给select赋值或者获取当前选择的值
+     * @param  {String} {optional} value 需要设置选择的值
+     * @return {[type]}       [description]
+    */
+
+    val: function(value) {
+      var result;
+
+      if (!value) {
+        result = this.find(function(model) {
+          return model.get('checked');
+        });
+        if (result) {
+          return result.get('key');
+        } else {
+          return null;
+        }
+      } else {
+        this.each(function(model) {
+          if (value !== model.get('key')) {
+            return model.set('checked', false);
+          } else {
+            return model.set('checked', true);
+          }
+        });
+        return this;
+      }
+    }
   });
 
   JT.View.Select = Backbone.View.extend({
     template: _.template('<div class="jtSelect jtBorderRadius3">' + '<a href="javascript:;" class="showSelect jtGrayGradient"><span class="jtArrowDown"></span></a>' + '<input class="userInput" type="text" title="<%= tips %>" placeholder="<%= tips %>" />' + '<ul class="selectList"><%= list %></ul>' + '</div>'),
+    optionTemplate: _.template('<li class="option" data-key="<%= key %>"><%= name %></li>'),
     events: {
-      'click .showSelect': 'toggleSelect',
+      'click .showSelect': 'toggleSelectList',
       'keyup .userInput': 'userInput',
       'dblclick .userInput': 'dblclickUserInput',
-      'click .option': 'select'
+      'click .option': 'clickSelect'
     },
+    /**
+     * userInput 用于处理用户输入事件，如果按下enter则显示列表，按esc则隐藏列表
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
     userInput: function(e) {
       if (e.keyCode === 0x0d) {
         this.show(this.$el.find('.selectList'));
@@ -44,19 +85,29 @@
       }
       return this;
     },
-    toggleSelect: function() {
+    /**
+     * toggleSelectList 切换显示选择列表
+     * @return {[type]} [description]
+    */
+
+    toggleSelectList: function() {
       var $el, selectList;
 
       $el = this.$el;
       selectList = $el.find('.selectList');
       if (selectList.is(":hidden")) {
         $el.find('.userInput').val('');
-        this.show(selectList);
+        this.show();
       } else {
-        this.hide(selectList);
+        this.hide();
       }
       return this;
     },
+    /**
+     * dblclickUserInput 双击处理，显示列表
+     * @return {[type]} [description]
+    */
+
     dblclickUserInput: function() {
       var $el;
 
@@ -64,51 +115,33 @@
       $el.find('.userInput').val('');
       return this.show($el.find('.selectList'));
     },
-    val: function(value) {
-      var $el, returnValue, userInput;
+    /**
+     * show 显示选择列表
+     * @return {[type]}            [description]
+    */
 
-      $el = this.$el;
-      userInput = $el.find('.userInput');
-      returnValue = '';
-      if (!value) {
-        value = userInput.val();
-        $el.find('.option').each(function() {
-          var obj;
-
-          obj = $(this);
-          if (!returnValue && obj.text() === value) {
-            return returnValue = obj.attr('data-key');
-          }
-        });
-        return returnValue;
-      } else {
-        $el.find('.option').each(function() {
-          var obj;
-
-          obj = $(this);
-          if (!returnValue && obj.attr('data-key') === value) {
-            return returnValue = obj.text();
-          }
-        });
-        userInput.val(returnValue);
-        return this;
-      }
-    },
-    show: function(selectList) {
-      if (selectList == null) {
-        selectList = this.$el.find('.selectList');
-      }
+    show: function() {
       this.filter();
       this.$el.find('.showSelect span').removeClass('jtArrowDown').addClass('jtArrowUp');
-      selectList.show();
+      this.$el.find('.selectList').show();
       return this;
     },
-    hide: function(selectList) {
+    /**
+     * hide 隐藏显示列表
+     * @return {[type]}            [description]
+    */
+
+    hide: function() {
       this.reset();
       this.$el.find('.showSelect span').removeClass('jtArrowUp').addClass('jtArrowDown');
-      selectList.hide();
+      this.$el.find('.selectList').hide();
       return this;
     },
+    /**
+     * filter 筛选符合条件的option
+     * @return {[type]} [description]
+    */
+
     filter: function() {
       var $el, key, options;
 
@@ -130,49 +163,150 @@
       }
       return this;
     },
+    /**
+     * reset 重置（将所有的option都显示）
+     * @return {[type]} [description]
+    */
+
     reset: function() {
       this.$el.find('.selectList .option').show();
       return this;
     },
-    select: function(e) {
-      var obj;
+    /**
+     * clickSelect 用户点击选择
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
 
+    clickSelect: function(e) {
+      var index, obj, self;
+
+      self = this;
       obj = $(e.currentTarget);
-      this.$el.find('.userInput').val(obj.text());
-      this.toggleSelect();
+      index = obj.index('.option');
+      this.model.each(function(model, i) {
+        if (i !== index) {
+          return model.set('checked', false);
+        } else {
+          model.set('checked', true);
+          return self.toggleSelectList();
+        }
+      });
       return this;
     },
-    destroy: function() {
-      this.remove();
-      return this.$el.remove();
+    /**
+     * select 选择某一option
+     * @param  {JT.Model.Select} model 标记为选中的model
+     * @return {[type]}       [description]
+    */
+
+    select: function(model) {
+      this.$el.find('.userInput').val(model.get('name'));
+      return this;
     },
+    /**
+     * destroy 销毁对象
+     * @return {[type]} [description]
+    */
+
+    destroy: function() {
+      return this.remove();
+    },
+    /**
+     * initialize 构造函数
+     * @return {[type]} [description]
+    */
+
     initialize: function() {
       var self;
 
       self = this;
       this.$el.addClass('jtWidget');
-      this.listenTo(this.model, "all", function(event) {
-        if (!~event.indexOf(':')) {
-          return self.render();
+      _.each('name key'.split(' '), function(event) {
+        return self.listenTo(self.model, "change:" + event, function(model, value) {
+          return self.change(model, event, value);
+        });
+      });
+      _.each('add remove'.split(' '), function(event) {
+        return self.listenTo(self.model, event, function(models, collection, options) {
+          return self.item(event, models, options);
+        });
+      });
+      self.listenTo(self.model, 'change:checked', function(model, value) {
+        if (value === true) {
+          return self.select(model);
         }
       });
       this.render();
       return this;
     },
+    /**
+     * change model的change事件
+     * @param  {JT.Model.Select} model 触发该事件的model
+     * @param  {String} key change的属性
+     * @param  {String} value change后的值
+     * @return {[type]}       [description]
+    */
+
+    change: function(model, key, value) {
+      var index, option;
+
+      index = this.model.indexOf(model);
+      option = this.$el.find('.selectList .option').eq(index);
+      switch (key) {
+        case 'name':
+          option.html(value);
+          break;
+        default:
+          option.attr('data-key', value);
+      }
+      return this;
+    },
+    /**
+     * item 添加或删除item
+     * @param  {String} type 操作的类型add、remove
+     * @param  {JT.Collection.Select, JT.Model.Select} models models
+     * @param  {Object} options remove操作中，index属性标记删除元素的位置
+     * @return {[type]}         [description]
+    */
+
+    item: function(type, models, options) {
+      var selectList, self;
+
+      self = this;
+      selectList = this.$el.find('.selectList');
+      if (!_.isArray(models)) {
+        models = [models];
+      }
+      if (type === 'add') {
+        _.each(models, function(model) {
+          var data;
+
+          data = model.toJSON();
+          return selectList.append(self.optionTemplate(data));
+        });
+      } else if (type === 'remove') {
+        selectList.find('.option').eq(options.index).remove();
+      }
+      return this;
+    },
+    /**
+     * [render description]
+     * @return {[type]} [description]
+    */
+
     render: function() {
-      var html, listHtmlArr;
+      var html, listHtmlArr, self;
 
+      self = this;
       listHtmlArr = _.map(this.model.toJSON(), function(item) {
-        var key, name;
+        var data;
 
-        if (_.isObject(item)) {
-          name = item.name;
-          key = item.key;
-        } else {
-          name = item;
-          key = item;
-        }
-        return "<li class='option' data-key='" + key + "'>" + name + "</li>";
+        data = {
+          name: item.name,
+          key: item.key
+        };
+        return self.optionTemplate(data);
       });
       this.templateData = {
         tips: this.options.tips,
@@ -193,15 +327,21 @@
   });
 
   JT.View.Dialog = Backbone.View.extend({
-    template: _.template('<h3 class="title jtBlueGradient jtBorderRadius3"><a href="javascript:;" class="close">×</a><%= title %></h3>' + '<div class="content"><%= content %></div>' + '<%= btns %>'),
+    template: _.template('<h3 class="title jtBlueGradient jtBorderRadius3"><a href="javascript:;" class="close">×</a><span><%= title %></span></h3>' + '<div class="content"><%= content %></div>' + '<%= btns %>'),
     events: {
       'click .btns .btn': 'btnClick',
       'click .close': 'close'
     },
+    /**
+     * btnClick 用户点击按钮处理
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
     btnClick: function(e) {
       var btnCbfs, cbf, cbfResult, key, obj;
 
-      btnCbfs = this.btnCbfs;
+      btnCbfs = this.model.get('btns');
       obj = $(e.currentTarget);
       key = obj.text();
       cbf = btnCbfs != null ? btnCbfs[key] : void 0;
@@ -214,10 +354,23 @@
       }
       return this;
     },
+    /**
+     * open 打开对话框
+     * @return {[type]} [description]
+    */
+
     open: function() {
+      if (this.modalMask) {
+        this.modalMask.show();
+      }
       this.$el.show();
       return this;
     },
+    /**
+     * close 关闭对话框
+     * @return {[type]} [description]
+    */
+
     close: function() {
       if (this.modalMask) {
         this.modalMask.hide();
@@ -229,43 +382,84 @@
       }
       return this;
     },
+    /**
+     * destroy 销毁对象
+     * @return {[type]} [description]
+    */
+
     destroy: function() {
       if (this.model.modal) {
         this.modalMask.remove();
       }
       return this.remove();
     },
+    /**
+     * getBtnsHtml 获取按钮的html
+     * @param  {Object} btns {key : handle}按钮的配置
+     * @return {[type]}      [description]
+    */
+
     getBtnsHtml: function(btns) {
       var btnHtmlArr;
 
       if (!btns) {
-        return '';
+        return '<div class="btns" style="display:none;"></div>';
       } else {
         btnHtmlArr = [];
         _.each(btns, function(value, key) {
-          return btnHtmlArr.push("<a class='btn' href='javascript:;'>" + key + "</a>");
+          return btnHtmlArr.push("<a class='jtBtn' href='javascript:;'>" + key + "</a>");
         });
         return "<div class='btns'>" + (btnHtmlArr.join('')) + "</div>";
       }
     },
+    /**
+     * update 更新对话框属性，title content btns
+     * @param  {String} type 更新的类型：title content btns
+     * @param  {String, Object} value 更新的值
+     * @return {[type]}       [description]
+    */
+
+    update: function(type, value) {
+      var btns, btnsHtml;
+
+      if (type === 'title') {
+        return this.$el.find('.title span').text(value);
+      } else if (type === 'content') {
+        return this.$el.find('.content').text(value);
+      } else if (type === 'btns') {
+        btnsHtml = this.getBtnsHtml(value);
+        btns = this.$el.find('.btns');
+        $(btnsHtml).insertBefore(btns);
+        return btns.remove();
+      }
+    },
+    /**
+     * initialize 构造函数
+     * @return {[type]} [description]
+    */
+
     initialize: function() {
       var self;
 
       self = this;
       this.$el.addClass('jtWidget jtDialog jtBorderRadius3');
-      this.listenTo(this.model, "all", function(event) {
-        if (!~event.indexOf(':')) {
-          return self.render();
-        }
+      _.each('title content btns'.split(' '), function(event) {
+        return self.listenTo(self.model, "change:" + event, function(model, value) {
+          return self.update(event, value);
+        });
       });
       this.render();
       return this;
     },
+    /**
+     * [render description]
+     * @return {[type]} [description]
+    */
+
     render: function() {
       var html;
 
       this.templateData = this.model.toJSON();
-      this.btnCbfs = this.templateData.btns;
       this.templateData.btns = this.getBtnsHtml(this.templateData.btns);
       if (this.model.modal) {
         this.modalMask = $('<div class="jtMask" />').appendTo('body');
@@ -300,6 +494,11 @@
     datePickerHtml: '<div class="jtDatePicker jtBorderRadius3">' + '<div class="arrowContainer arrowContainerBottom"></div>' + '<div class="arrowContainer"></div>' + '<div class="daysContainer">' + '<table>' + '<thead></thead>' + '<tbody></tbody>' + '</table>' + '</div>' + '<div class="monthsContainer">' + '<table>' + '<thead></thead>' + '<tbody></tbody>' + '</table>' + '</div>' + '<div class="yearsContainer">' + '<table>' + '<thead></thead>' + '<tbody></tbody>' + '</table>' + '</div>' + '</div>',
     monthsTheadTemplate: _.template('<tr>' + '<th class="prev">‹</th>' + '<th colspan="5" class="dateView"><%= year %></th>' + '<th class="next">›</th>' + '</tr>'),
     daysTheadTemplate: _.template('<tr>' + '<th class="prev">‹</th>' + '<th colspan="5" class="dateView"><%= date %></th>' + '<th class="next">›</th>' + '</tr>' + '<tr>' + '<th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>' + '</tr>'),
+    /**
+     * initialize 构造函数
+     * @return {[type]} [description]
+    */
+
     initialize: function() {
       var $el, datePicker, elOffset, options, self, _ref4;
 
@@ -329,6 +528,11 @@
       });
       return this;
     },
+    /**
+     * prevMonth 上一个月
+     * @return {[type]} [description]
+    */
+
     prevMonth: function() {
       var date, month;
 
@@ -342,6 +546,11 @@
       }
       return this.render();
     },
+    /**
+     * nextMonth 下一个月
+     * @return {[type]} [description]
+    */
+
     nextMonth: function() {
       var date, month;
 
@@ -355,6 +564,11 @@
       }
       return this.render();
     },
+    /**
+     * prevYear 上一年
+     * @return {[type]} [description]
+    */
+
     prevYear: function() {
       var date;
 
@@ -362,6 +576,11 @@
       this.date.setFullYear(date.getFullYear() - 1);
       return this.render('month');
     },
+    /**
+     * nextYear 下一年
+     * @return {[type]} [description]
+    */
+
     nextYear: function() {
       var date;
 
@@ -369,9 +588,20 @@
       this.date.setFullYear(date.getFullYear() + 1);
       return this.render('month');
     },
+    /**
+     * showMonths 显示月份选择
+     * @return {[type]} [description]
+    */
+
     showMonths: function() {
       return this.render('month');
     },
+    /**
+     * selectDay 用户选择日期
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
     selectDay: function(e) {
       var obj;
 
@@ -380,6 +610,11 @@
       this.val().hide();
       return this;
     },
+    /**
+     * val 获取当前选择的日期
+     * @return {[type]} [description]
+    */
+
     val: function() {
       var date, day, month, year;
 
@@ -396,6 +631,12 @@
       this.$inputObj.val("" + year + "-" + month + "-" + day);
       return this;
     },
+    /**
+     * selectMonth 用户选择月份
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
     selectMonth: function(e) {
       var obj;
 
@@ -404,15 +645,30 @@
       this.val().render('day');
       return this;
     },
+    /**
+     * show 显示
+     * @return {[type]} [description]
+    */
+
     show: function() {
       this.render();
       this.$el.show();
       return this;
     },
+    /**
+     * hide 隐藏
+     * @return {[type]} [description]
+    */
+
     hide: function() {
       this.$el.hide();
       return this;
     },
+    /**
+     * getMonthsTbody 获取月份显示表格的tbody
+     * @return {[type]} [description]
+    */
+
     getMonthsTbody: function() {
       var months, tbodyHtml;
 
@@ -425,6 +681,11 @@
       tbodyHtml.push('</td></tr>');
       return tbodyHtml.join('');
     },
+    /**
+     * getDaysTbody 获取日期显示表格的tbody
+     * @return {[type]} [description]
+    */
+
     getDaysTbody: function() {
       var currentDate, currentDay, currentDayMatchFlag, date, dateTotal, day, dayTotalList, i, index, month, selectDay, selectDayMatchFlag, tbodyHtml, year, _i;
 
@@ -473,12 +734,23 @@
       }
       return tbodyHtml.join('');
     },
+    /**
+     * getViewDate 获取显示的日期，格式化"MM YYYY"
+     * @return {[type]} [description]
+    */
+
     getViewDate: function() {
       var months;
 
       months = this.options.months;
       return "" + months[this.date.getMonth()] + " " + (this.date.getFullYear());
     },
+    /**
+     * [render description]
+     * @param  {[type]} type =             'day' [description]
+     * @return {[type]}      [description]
+    */
+
     render: function(type) {
       var datePicker, daysContainer, monthsContainer;
 
@@ -505,6 +777,11 @@
       }
       return this;
     },
+    /**
+     * destroy 销毁对象
+     * @return {[type]} [description]
+    */
+
     destroy: function() {
       this.$inputObj.off('.jtDatePicker');
       return this.remove();
@@ -519,111 +796,303 @@
 
   JT.View.Accordion = Backbone.View.extend({
     events: {
-      'click .item .title': 'active'
+      'click .item .title': 'clickActive'
     },
-    itemTemplate: _.template('<div class="item">' + '<h3 class="title"><div class="jtArrowDown"></div><div class="jtArrowRight"></div><%= title %></h3>' + '<div class="content"><%= content %></div>' + '</div>'),
+    itemTemplate: _.template('<div class="item">' + '<h3 class="title jtGrayGradient"><div class="jtArrowDown"></div><div class="jtArrowRight"></div><span><%= title %></span></h3>' + '<div class="content"><%= content %></div>' + '</div>'),
+    /**
+     * initialize 构造函数
+     * @return {[type]} [description]
+    */
+
     initialize: function() {
       var self;
 
       self = this;
       this.$el.addClass('jtWidget jtAccordion jtBorderRadius3');
-      this.listenTo(this.model, "all", function(event) {
-        var index;
-
-        if (!~event.indexOf(':')) {
-          index = self.activeIndex;
-          self.activeIndex = -1;
-          return self.render(index);
+      _.each('add remove'.split(' '), function(event) {
+        return self.listenTo(self.model, event, function(models, collection, options) {
+          return self.item(event, models, options);
+        });
+      });
+      _.each('title content'.split(' '), function(event) {
+        return self.listenTo(self.model, "change:" + event, function(model, value) {
+          return self.change(model, event, value);
+        });
+      });
+      self.listenTo(self.model, 'change:active', function(model, value, options) {
+        if (value === true) {
+          return self.active(self.model.indexOf(model));
         }
       });
       this.render();
       return this;
     },
-    active: function(index) {
-      var $el;
+    /**
+     * change change事件处理
+     * @param  {JT.Model.Accordion} model change事件的对象
+     * @param  {String} key change的属性
+     * @param  {String} value change后的值
+     * @return {[type]}       [description]
+    */
 
-      $el = this.$el;
-      if (!_.isNumber(index)) {
-        index = $(index.currentTarget).closest('.item').index();
+    change: function(model, key, value) {
+      var item;
+
+      item = this.$el.find('.item').eq(this.model.indexOf(model));
+      switch (key) {
+        case 'title':
+          return item.find('.title span').html(value);
+        default:
+          return item.find('.content').html(value);
       }
-      if (this.activeIndex !== index) {
-        $el.find('.item').each(function(i) {
-          var obj;
+    },
+    /**
+     * item 添加或删除item
+     * @param  {String} type 操作类型：add remove
+     * @param  {JT.Collection.Accordion, JT.Model.Accordion} models models
+     * @param  {Object} options 在删除操作中，index属性标记要删除元素的位置
+     * @return {[type]}         [description]
+    */
 
-          obj = $(this);
-          if (i === index) {
-            return obj.addClass('active').find('.title').addClass('jtBlueGradient').removeClass('jtGrayGradient');
-          } else {
-            return obj.removeClass('active').find('.title').addClass('jtGrayGradient').removeClass('jtBlueGradient');
-          }
+    item: function(type, models, options) {
+      var self;
+
+      self = this;
+      if (!_.isArray(models)) {
+        models = [models];
+      }
+      if (type === 'add') {
+        _.each(models, function(model) {
+          var data;
+
+          data = model.toJSON();
+          return self.$el.append(self.itemTemplate(data));
         });
-        this.activeIndex = index;
+      } else if (type === 'remove') {
+        self.$el.find('.item').eq(options.index).remove();
       }
       return this;
     },
-    render: function(activeIndex) {
-      var htmlArr, self;
+    /**
+     * clickActive 点击选择处理
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
+    clickActive: function(e) {
+      var index;
+
+      index = $(e.currentTarget).closest('.item').index();
+      return this.model.at(index).set('active', true);
+    },
+    /**
+     * active 设置item为活动状态
+     * @param  {Integer} activeIndex 设置为活动的item位置，默认为0
+     * @return {[type]}             [description]
+    */
+
+    active: function(activeIndex) {
+      var $el;
 
       if (activeIndex == null) {
         activeIndex = 0;
       }
+      $el = this.$el;
+      if (activeIndex < 0) {
+        activeIndex = 0;
+      }
+      this.model.each(function(model, i) {
+        if (i !== activeIndex) {
+          return model.set('active', false);
+        }
+      });
+      $el.find('.item').each(function(i) {
+        var obj;
+
+        obj = $(this);
+        if (i === activeIndex) {
+          return obj.addClass('active').find('.title').addClass('jtBlueGradient').removeClass('jtGrayGradient');
+        } else {
+          return obj.removeClass('active').find('.title').addClass('jtGrayGradient').removeClass('jtBlueGradient');
+        }
+      });
+      return this;
+    },
+    /**
+     * destroy 销毁对象
+     * @return {[type]} [description]
+    */
+
+    destroy: function() {
+      return this.remove();
+    },
+    /**
+     * [render description]
+     * @return {[type]} [description]
+    */
+
+    render: function() {
+      var htmlArr, self;
+
       self = this;
       htmlArr = _.map(this.model.toJSON(), function(item) {
         return self.itemTemplate(item);
       });
       this.$el.html(htmlArr.join(''));
-      this.active(activeIndex);
+      this.model.at(0).set('active', true);
       return this;
     }
   });
 
-  JT.Model.Tabs = Backbone.Model.extend({});
+  JT.Model.Tab = Backbone.Model.extend({});
 
   JT.Collection.Tabs = Backbone.Collection.extend({
-    model: JT.Model.Tabs
+    model: JT.Model.Tab
   });
 
   JT.View.Tabs = Backbone.View.extend({
     events: {
-      'click .nav li': 'active'
+      'click .nav li': 'clickActive'
     },
+    /**
+     * initialize 构造函数
+     * @return {[type]} [description]
+    */
+
     initialize: function() {
       var self;
 
       self = this;
       this.$el.addClass('jtWidget jtTabs jtBorderRadius3');
-      this.render();
-      this.listenTo(this.model, "all", function(event) {
-        var index;
-
-        if (!~event.indexOf(':')) {
-          index = self.activeIndex;
-          self.activeIndex = -1;
-          return self.render(index);
+      _.each('add remove'.split(' '), function(event) {
+        return self.listenTo(self.model, event, function(models, collection, options) {
+          return self.item(event, models, options);
+        });
+      });
+      self.listenTo(self.model, 'change:active', function(model, value) {
+        if (value === true) {
+          return self.active(self.model.indexOf(model));
         }
       });
+      _.each('title content'.split(' '), function(event) {
+        return self.listenTo(self.model, "change:" + event, function(model, value) {
+          return self.change(model, event, value);
+        });
+      });
+      this.render();
       return this;
     },
-    active: function(index) {
-      var $el, liList, tabList;
+    /**
+     * item 添加或删除item
+     * @param  {String} type 操作的类型：add remove
+     * @param  {JT.Collection.Tabs, JT.Model.Tab} models models
+     * @param  {Object} options 在删除操作中，index属性标记要删除元素的位置
+     * @return {[type]}         [description]
+    */
 
+    item: function(type, models, options) {
+      var $el, nav, self;
+
+      self = this;
       $el = this.$el;
-      if (!_.isNumber(index)) {
-        index = $(index.currentTarget).index();
+      nav = $el.find('.nav');
+      if (!_.isArray(models)) {
+        models = [models];
       }
-      if (this.activeIndex !== index) {
-        liList = $el.find('.nav li');
-        tabList = $el.find('.tab');
-        if (this.activeIndex != null) {
-          liList.eq(this.activeIndex).removeClass('active');
-          tabList.eq(this.activeIndex).removeClass('active');
-        }
-        liList.eq(index).addClass('active');
-        tabList.eq(index).addClass('active');
-        this.activeIndex = index;
+      if (type === 'add') {
+        _.each(models, function(model) {
+          var data;
+
+          data = model.toJSON();
+          nav.append("<li>" + data.title + "</li>");
+          return $el.append("<div class='tab'>" + data.content + "</div>");
+        });
+      } else if (type === 'remove') {
+        nav.find('li').eq(options.index).remove();
+        $el.find('.tab').eq(options.index).remove();
       }
       return this;
     },
+    /**
+     * change change事件的处理
+     * @param  {JT.Model.Tab} model 触发change事件的model
+     * @param  {String} type  change的属性
+     * @param  {String} value change后的值
+     * @return {[type]}       [description]
+    */
+
+    change: function(model, key, value) {
+      var index;
+
+      index = this.model.indexOf(model);
+      if (key === 'title') {
+        this.$el.find('.nav li').eq(index).html(value);
+      } else {
+        this.$el.find('.tab').eq(index).html(value);
+      }
+      return this;
+    },
+    /**
+     * clickActive 用户点击选择处理
+     * @param  {Object} e jQuery event对象
+     * @return {[type]}   [description]
+    */
+
+    clickActive: function(e) {
+      var index;
+
+      index = $(e.currentTarget).index();
+      this.model.at(index).set('active', true);
+      return this;
+    },
+    /**
+     * active 设置item为活动状态
+     * @param  {Integer} activeIndex 设置为活动的item位置，默认为0
+     * @return {[type]}             [description]
+    */
+
+    active: function(activeIndex) {
+      var $el, i, liList, tabList, _i, _ref4;
+
+      if (activeIndex == null) {
+        activeIndex = 0;
+      }
+      $el = this.$el;
+      if (activeIndex < 0) {
+        activeIndex = 0;
+      }
+      this.model.each(function(model, i) {
+        if (i !== activeIndex) {
+          return model.set('active', false);
+        }
+      });
+      liList = $el.find('.nav li');
+      tabList = $el.find('.tab');
+      for (i = _i = 0, _ref4 = liList.length; 0 <= _ref4 ? _i <= _ref4 : _i >= _ref4; i = 0 <= _ref4 ? ++_i : --_i) {
+        if (i === activeIndex) {
+          liList.eq(i).addClass('active');
+          tabList.eq(i).addClass('active');
+        } else {
+          liList.eq(i).removeClass('active');
+          tabList.eq(i).removeClass('active');
+        }
+      }
+      return this;
+    },
+    /**
+     * destroy 销毁对象
+     * @return {[type]} [description]
+    */
+
+    destroy: function() {
+      return this.remove();
+    },
+    /**
+     * [render description]
+     * @param  {[type]} activeIndex =             0 [description]
+     * @return {[type]}             [description]
+    */
+
     render: function(activeIndex) {
       var contentArr, data, liHtmlArr, self, tabHtmlArr, titleArr;
 
@@ -641,7 +1110,7 @@
         return "<div class='tab'>" + content + "</div>";
       });
       this.$el.html("<ul class='jtBlueGradient nav'>" + (liHtmlArr.join('')) + "</ul>" + (tabHtmlArr.join('')));
-      this.active(activeIndex);
+      this.model.at(0).set('active', true);
       return this;
     }
   });

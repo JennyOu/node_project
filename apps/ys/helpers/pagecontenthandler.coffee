@@ -14,11 +14,37 @@ pageContentHandler =
   index : (req, res, cbf) ->
     viewData =
       header : webConfig.getHeader req.url
-
-    cbf null, {
-      title : '销售管理'
-      viewData : viewData
-    }
+    currentPage = Math.floor req.param('page') || 1
+    limit = 60
+    skip = limit * (currentPage - 1)
+    async.parallel [
+      (cbf) ->
+        ysDbClient.count 'items', {}, cbf
+      (cbf) ->
+        ysDbClient.find 'items', {}, {limit : limit, skip : skip}, cbf
+    ], (err, data) ->
+      if err
+        cbf err
+        return
+      items = [[], [], [], []]
+      itemsLength = items.length
+      total = data[0]
+      docs = data[1]
+      fixedWidth = 210
+      _.each docs, (doc, i) ->
+        width = doc.imgSize.width
+        doc.imgSize.height = Math.floor 210 / doc.imgSize.width * doc.imgSize.height
+        items[i % itemsLength].push doc
+      viewData.items = items
+      viewData.pageInfo = 
+        start : Math.max 1, currentPage - 5
+        current : currentPage
+        end : Math.ceil total / limit
+        urlPrefix : ''
+      cbf null, {
+        title : '盈盛行'
+        viewData : viewData
+      }
   management : (req, res, cbf) ->
     viewData =
       header : webConfig.getHeader req.url

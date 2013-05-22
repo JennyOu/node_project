@@ -27,25 +27,25 @@ TransferPage = Backbone.View.extend {
       if !err
         $.post('/save', data).success (data) ->
           if data.code == 0
-            new JT.Alert {
-              title : '保存成功'
-              content : '<p>保存成功，3秒后自动刷新页面！</p>'
-              btns : 
-                '直接刷新' : ->
-                  window.location.reload()
-            }
+            new JT.View.Alert 
+              model : new JT.Model.Dialog
+                title : '保存成功'
+                content : '<p>保存成功，3秒后自动刷新页面！</p>'
+                btns : 
+                  '直接刷新' : ->
+                    window.location.reload()
             _.delay () ->
               window.location.reload()
             , 3000
           else
-            new JT.Alert {
-              title : '保存失败'
-              content : '<p>保存失败，请重新保存！</p>'
-              btns : 
-                '保存' : ->
-                  self.save()
-                '取消' : ->
-            }
+            new JT.View.Alert 
+              model : new JT.Model.Dialog
+                title : '保存失败'
+                content : '<p>保存失败，请重新保存！</p>'
+                btns : 
+                  '保存' : ->
+                    self.save()
+                  '取消' : ->
   validate : (data, cbf)->
     errorMsg = []
     if !data.fromDepot
@@ -60,54 +60,52 @@ TransferPage = Backbone.View.extend {
       cbf null
     else
       new JT.Alert
-        title : '转仓单数据有误'
-        content : errorMsg.join ''
-        btns : 
-          '确定' : ->
+        model : new JT.Model.Dialog
+          title : '转仓单数据有误'
+          content : errorMsg.join ''
+          btns : 
+            '确定' : ->
   initialize : ->
     self = @
     $el = @$el
     $(document).on 'userinfo', (e, userInfo) ->
       self.userLogin userInfo
       
-    @selectItemListDialog = new JT.Dialog {
+    @selectItemListDialog = new JT.View.Dialog
       el : $el.find('.selectItemsContainer').get 0
-      title : '商品选择列表'
-      btns : 
-        '确定' : () ->
-          self.selectItemListView.select()
-        '关闭' : () ->
-    }
+      model : new JT.Model.Dialog
+        title : '商品选择列表'
+        btns : 
+          '确定' : () ->
+            self.selectItemListView.select()
+          '关闭' : () ->
 
-    @transferItemsListView = new YS.OrderItemListView {
+    @transferItemsListView = new YS.OrderItemListView
       el : $el.find('.transferItemsContainer').get 0
       model : new YS.OrderItemList
       showSelectList : (key) ->
         self.selectItemListDialog.open()
         self.selectItemListView.show key.trim(), self.fromDepotSelect.val()
-    }
-
-    @selectItemListView = new YS.SelectItemListView {
+    @selectItemListView = new YS.SelectItemListView
       el : $el.find('.selectItemsContainer .content').get 0
       model : new YS.SelectItemList
       select : (data) ->
         self.selectItemListDialog.close()
         self.transferItemsListView.add data
-    }
 
-    @fromDepotSelect = new JT.Select {
+
+    @fromDepotSelect = new JT.Collection.Select DEPOTS
+    new JT.View.Select
       el : $el.find '.fromDepot'
-      data : 
-        name : '转出仓库'
-        list : DEPOTS
-    }
+      tips : '转出仓库'
+      model : @fromDepotSelect
 
-    @toDepotSelect = new JT.Select {
+
+    @toDepotSelect = new JT.Collection.Select DEPOTS
+    new JT.View.Select
       el : $el.find '.toDepot'
-      data : 
-        name : '转入仓库'
-        list : DEPOTS
-    }
+      tips : '转入仓库'
+      model : @toDepotSelect
 
     @getOrderNo()
 }

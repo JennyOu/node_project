@@ -8,10 +8,10 @@ webConfig =
         url : '/'
         title : '首页'
       }
-      {
-        url : '/management'
-        title : '管理系统'
-      }
+      # {
+      #   url : '/management'
+      #   title : '管理系统'
+      # }
       # {
       #   url : '/sell'
       #   title : '销售单'

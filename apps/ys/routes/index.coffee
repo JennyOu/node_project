@@ -6,7 +6,7 @@ staticsHost = appConfig.getStaticsHost()
 
 routeInfos = [
   {
-    route : '/'
+    route : ['/', '/page/:page']
     jadeView : 'ys/index'
     staticsHost : staticsHost
     handler : pageContentHandler.index

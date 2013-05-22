@@ -29,25 +29,25 @@ BuyPage = Backbone.View.extend {
       if !err
         $.post(url, data).success (data) ->
           if data.code == 0
-            new JT.Alert {
-              title : '保存成功'
-              content : '<p>保存成功，3秒后自动刷新页面！</p>'
-              btns : 
-                '直接刷新' : ->
-                  window.location.reload()
-            }
+            new JT.View.Alert 
+              model : new JT.Model.Dialog
+                title : '保存成功'
+                content : '<p>保存成功，3秒后自动刷新页面！</p>'
+                btns : 
+                  '直接刷新' : ->
+                    window.location.reload()
             _.delay () ->
               window.location.reload()
             , 3000
           else
-            new JT.Alert {
-              title : '保存失败'
-              content : '<p>保存失败，请重新保存！</p>'
-              btns : 
-                '保存' : ->
-                  self.save()
-                '取消' : ->
-            }
+            new JT.View.Alert
+              model : new JT.Model.Dialog
+                title : '保存失败'
+                content : '<p>保存失败，请重新保存！</p>'
+                btns : 
+                  '保存' : ->
+                    self.save()
+                  '取消' : ->
 
   validate : (data, cbf)->
     errorMsg = []
@@ -60,28 +60,27 @@ BuyPage = Backbone.View.extend {
     if !errorMsg.length
       cbf null
     else
-      new JT.Alert {
-        title : '进货单数据有误'
-        content : errorMsg.join ''
-        btns : 
-          '继续保存' : ->
-            cbf null
-          '取消保存' : ->
-
-      }
+      new JT.View.Alert 
+        model : new JT.Model.Dialog
+          title : '进货单数据有误'
+          content : errorMsg.join ''
+          btns : 
+            '继续保存' : ->
+              cbf null
+            '取消保存' : ->
   initialize : ->
     self = @
     $el = @$el
     $(document).on 'userinfo', (e, userInfo) ->
       self.userLogin userInfo
-    @selectItemListDialog = new JT.Dialog {
+    @selectItemListDialog = new JT.View.Dialog
       el : $el.find('.selectItemsContainer').get 0
-      title : '商品选择列表'
-      btns : 
-        '确定' : () ->
-          self.selectItemListView.select()
-        '关闭' : () ->
-    }
+      model : new JT.Model.Dialog
+        title : '商品选择列表'
+        btns : 
+          '确定' : () ->
+            self.selectItemListView.select()
+          '关闭' : () ->
 
     @buyItemListView = new YS.OrderItemListView {
       el : $el.find('.buyItemsContainer').get 0
@@ -98,19 +97,34 @@ BuyPage = Backbone.View.extend {
         self.buyItemListView.add data
     }
 
-    @depotSelect = new JT.Select {
+
+    @depotSelect = new JT.Collection.Select DEPOTS
+    new JT.View.Select {
       el : $el.find '.depot'
-      data : 
-        name : '进货仓库'
-        list : DEPOTS
+      tips : '进货仓库'
+      model : @depotSelect
     }
 
-    @clientSelect = new JT.Select {
+    @clientSelect = new JT.Collection.Select [
+        {
+          key : '珠海刘'
+          name : '珠海刘'
+        }
+        {
+          key : '珠海郑'
+          name : '珠海郑'
+        }
+        {
+          key : '珠海谢'
+          name : '珠海谢'
+        }
+      ]
+    new JT.View.Select {
       el : $el.find '.client'
-      data : 
-        name : '客户选择'
-        list : '珠海刘 珠海郑 珠海谢'.split ' '
+      tips : '客户选择'
+      model : @clientSelect
     }
+
     @getOrderNo()
 }
 
