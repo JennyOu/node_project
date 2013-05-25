@@ -25,7 +25,7 @@ config =
     process.env.NODE_ENV == 'production'
   getStaticsHost : () ->
     if @isProductionMode()
-      'http://s.vicanso.com'
+      'http://jennyou.com'
     else
       null
   getMongoDbConfig : () ->
