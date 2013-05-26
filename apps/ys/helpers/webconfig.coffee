@@ -6,7 +6,7 @@ webConfig =
     navData = [
       {
         url : '/'
-        title : '首页'
+        title : '盈盛行'
       }
       # {
       #   url : '/management'

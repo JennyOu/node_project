@@ -251,17 +251,6 @@ pageContentHandler =
           code : 0
           msg : '创建用户成功！'
         }
-    # ysDbClient.save 'users', body, (err) ->
-    #   if err
-    #     cbf null, {
-    #       code : -1
-    #       msg : '创建用户失败'
-    #     }
-    #   else
-    #     cbf null, {
-    #       code : 0
-    #       msg : '创建用户成功！'
-    #     }
 
 _.delay () ->
   # ysDbClient.find 'orders', {}, {limit : 0}, (err, docs) ->
